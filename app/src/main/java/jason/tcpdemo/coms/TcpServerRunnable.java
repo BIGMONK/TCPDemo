@@ -99,7 +99,7 @@ public class TcpServerRunnable implements Runnable {
         ServerSocketThread(Socket socket) {
             this.socket = socket;
             ip = socket.getInetAddress().toString();
-            Log.i(TAG, "ServerSocketThread:检测到新的客户端联入,ip:" + ip);
+            Log.i(TAG, "ServerSocketThread:检测到新的客户端联入,ip:" + ip+"  "+this.toString());
             Intent intent = new Intent();
             intent.setAction("tcpServerReceiver");
             intent.putExtra("tcpServerReceiver", "ServerSocketThread:检测到新的客户端联入,ip:" + ip);
@@ -113,11 +113,11 @@ public class TcpServerRunnable implements Runnable {
                 start();
             } catch (SocketException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread  SocketException" + e.toString());
+                Log.e(TAG, "ServerSocketThread  SocketException "+this.toString()+"  " + e.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread  IOException" + e.toString());
+                Log.e(TAG, "ServerSocketThread  IOException "+this.toString()+"  " + e.toString());
 
             }
         }
@@ -148,27 +148,29 @@ public class TcpServerRunnable implements Runnable {
                     }
                 } catch (SocketException e){
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run SocketException " + e.toString());
+                    Log.e(TAG, "ServerSocketThread run SocketException  "+this.toString()+"  " + e.toString());
+                    isRun=false;//客户端主动断开 会抛异常
                 }catch (SocketTimeoutException e){
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run SocketTimeoutException " + e.toString());
+                    Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "+this.toString()+"  " + e.toString());
+                    isRun=false;//超时断开该socket 服务器与客户端 超时无数据传输 抛异常
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run UnsupportedEncodingException" + e.toString());
+                    Log.e(TAG, "ServerSocketThread run UnsupportedEncodingException "+this.toString()+"  "+ e.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run IOException" + e.toString());
-
+                    Log.e(TAG, "ServerSocketThread run IOException "+this.toString()+"  " + e.toString());
                 }
 
             }
             try {
                 socket.close();
-                SST.clear();
-                Log.i(TAG, "run: 断开连接");
+//                SST.clear();
+                SST.remove(this);
+                Log.i(TAG, "run: 断开连接 "+this.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread run IOException" + e.toString());
+                Log.e(TAG, "ServerSocketThread run IOException "+this.toString()+"  "+ e.toString());
             }
         }
     }
