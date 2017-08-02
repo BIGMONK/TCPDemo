@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jason.tcpdemo.funcs.FuncTcpServer;
@@ -92,6 +93,9 @@ public class TcpServer implements Runnable{
                 os = socket.getOutputStream();
                 is = socket.getInputStream();
                 pw = new PrintWriter(os,true);
+
+                send(""+new Date().toString()+"服务器已收到连接请求并建立连接");
+
                 start();
             } catch (IOException e) {
                 e.printStackTrace();

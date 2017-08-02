@@ -148,7 +148,7 @@ public class FuncTcpServer extends Activity {
             FuncTcpServer activity = mActivity.get();
             if (activity != null) {
                 switch (msg.what) {
-                    case 1:
+                    case 1://接收区
                         txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
