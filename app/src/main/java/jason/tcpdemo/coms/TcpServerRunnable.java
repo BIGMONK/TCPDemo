@@ -153,7 +153,7 @@ public class TcpServerRunnable implements Runnable {
                 }catch (SocketTimeoutException e){
                     e.printStackTrace();
                     Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "+this.toString()+"  " + e.toString());
-                    isRun=false;//超时断开该socket 服务器与客户端 超时无数据传输 抛异常
+                    isRun=false;//超时停止循环断开该socket； 服务器与客户端 超时无数据传输 抛异常；超时仅仅抛异常并不会导致socket主动断开
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     Log.e(TAG, "ServerSocketThread run UnsupportedEncodingException "+this.toString()+"  "+ e.toString());
