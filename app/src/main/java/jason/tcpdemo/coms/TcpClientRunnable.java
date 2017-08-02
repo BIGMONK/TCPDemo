@@ -3,29 +3,23 @@ package jason.tcpdemo.coms;
 import android.content.Intent;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import jason.tcpdemo.funcs.FuncTcpClient;
-import jason.tcpdemo.funcs.FuncTcpServer;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import jason.tcpdemo.funcs.ActivityFuncTcpClient;
 
 /**
  * Created by Jason Zhu on 2017-04-25.
  * Email: cloud_happy@163.com
  */
 
-public class TcpClient implements Runnable {
-    private String TAG = "TcpClient";
+public class TcpClientRunnable implements Runnable {
+    private String TAG = "TcpClientRunnable";
     private String serverIP = "192.168.88.141";
     private int serverPort = 1234;
     private PrintWriter pw;
@@ -38,7 +32,7 @@ public class TcpClient implements Runnable {
     private int rcvLen;
 
 
-    public TcpClient(String ip, int port) {
+    public TcpClientRunnable(String ip, int port) {
         this.serverIP = ip;
         this.serverPort = port;
     }
@@ -96,7 +90,7 @@ public class TcpClient implements Runnable {
                         Intent intent = new Intent();
                         intent.setAction("tcpClientReceiver");
                         intent.putExtra("tcpClientReceiver", rcvMsg);
-                        FuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
+                        ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                         if (rcvMsg.equals("QuitClient")) {   //服务器要求客户端结束
                             isRun = false;
                         }

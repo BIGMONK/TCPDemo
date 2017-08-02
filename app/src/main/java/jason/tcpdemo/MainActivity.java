@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -13,8 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import jason.tcpdemo.funcs.FuncTcpClient;
-import jason.tcpdemo.funcs.FuncTcpServer;
+import jason.tcpdemo.funcs.ActivityFuncTcpClient;
+import jason.tcpdemo.funcs.ActivityFuncTcpServer;
 
 public class MainActivity extends Activity {
 
@@ -32,10 +31,10 @@ public class MainActivity extends Activity {
         switch (view.getId()) {
             case R.id.btn_FunctionEnsure:
                 if (radioBtnServer.isChecked()) {
-                    startActivity(new Intent(MainActivity.this, FuncTcpServer.class));
+                    startActivity(new Intent(MainActivity.this, ActivityFuncTcpServer.class));
                 }
                 if (radioBtnClient.isChecked()) {
-                    startActivity(new Intent(MainActivity.this, FuncTcpClient.class));
+                    startActivity(new Intent(MainActivity.this, ActivityFuncTcpClient.class));
                 }
                 break;
         }
@@ -57,7 +56,7 @@ public class MainActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.function);
+        setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
     }
 

@@ -17,9 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="jason.tcpdemo.funcs.FuncTcpClient"
+        <activity android:name="jason.tcpdemo.funcs.ActivityFuncTcpClient"
             android:label="TCPClient"/>
-        <activity android:name="jason.tcpdemo.funcs.FuncTcpServer"
+        <activity android:name="jason.tcpdemo.funcs.ActivityFuncTcpServer"
             android:label="TCPServer"
             />
     </application>

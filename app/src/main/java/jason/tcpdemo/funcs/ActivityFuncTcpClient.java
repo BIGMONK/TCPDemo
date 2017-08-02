@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,9 +26,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jason.tcpdemo.R;
-import jason.tcpdemo.coms.TcpClient;
+import jason.tcpdemo.coms.TcpClientRunnable;
 
-public class FuncTcpClient extends Activity {
+public class ActivityFuncTcpClient extends Activity {
     @BindView(R.id.edit_tcpClientIp)
     EditText editClientIp;
     @BindView(R.id.edit_tcpClientPort)
@@ -58,10 +57,10 @@ public class FuncTcpClient extends Activity {
     Button btnScanDevices;
     @BindView(R.id.listview_Devices)
     ListView listviewDevices;
-    private String TAG = "FuncTcpClient";
+    private String TAG = "ActivityFuncTcpClient";
     @SuppressLint("StaticFieldLeak")
     public static Context context;
-    private static TcpClient tcpClient = null;
+    private static TcpClientRunnable tcpClient = null;
     private final MyHandler myHandler = new MyHandler(this);
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
     ExecutorService exec = Executors.newCachedThreadPool();
@@ -83,7 +82,7 @@ public class FuncTcpClient extends Activity {
                 btnStartClient.setEnabled(false);
                 btnCloseClient.setEnabled(true);
                 btnClientSend.setEnabled(true);
-                tcpClient = new TcpClient(editClientIp.getText().toString(), getPort(editClientPort.getText().toString()));
+                tcpClient = new TcpClientRunnable(editClientIp.getText().toString(), getPort(editClientPort.getText().toString()));
                 exec.execute(tcpClient);
                 break;
             case R.id.btn_tcpClientClose:
@@ -122,10 +121,10 @@ public class FuncTcpClient extends Activity {
 
 
     private class MyHandler extends Handler {
-        private WeakReference<FuncTcpClient> mActivity;
+        private WeakReference<ActivityFuncTcpClient> mActivity;
 
-        MyHandler(FuncTcpClient activity) {
-            mActivity = new WeakReference<FuncTcpClient>(activity);
+        MyHandler(ActivityFuncTcpClient activity) {
+            mActivity = new WeakReference<ActivityFuncTcpClient>(activity);
         }
 
         @Override

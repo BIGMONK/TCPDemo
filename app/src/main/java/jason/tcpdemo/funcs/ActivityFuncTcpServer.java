@@ -30,14 +30,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jason.tcpdemo.R;
-import jason.tcpdemo.coms.TcpServer;
+import jason.tcpdemo.coms.TcpServerRunnable;
 
 /**
  * Created by Jason Zhu on 2017-04-24.
  * Email: cloud_happy@163.com
  */
 
-public class FuncTcpServer extends Activity {
+public class ActivityFuncTcpServer extends Activity {
     @BindView(R.id.txt_Server_Ip)
     TextView txtServerIp;
     @BindView(R.id.edit_Server_Port)
@@ -62,7 +62,7 @@ public class FuncTcpServer extends Activity {
     EditText editServerSend;
     @BindView(R.id.btn_tcpServerSend)
     Button btnServerSend;
-    private static TcpServer tcpServer = null;
+    private static TcpServerRunnable tcpServer = null;
     private final MyHandler myHandler = new MyHandler(this);
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
     @SuppressLint("StaticFieldLeak")
@@ -94,7 +94,7 @@ public class FuncTcpServer extends Activity {
                 btnStartServer.setEnabled(false);
                 btnCloseServer.setEnabled(true);
                 btnServerSend.setEnabled(true);
-                tcpServer = new TcpServer(getHost(editServerPort.getText().toString()));
+                tcpServer = new TcpServerRunnable(getHost(editServerPort.getText().toString()));
                 exec.execute(tcpServer);
                 break;
             case R.id.btn_tcpServerClose:
@@ -124,7 +124,7 @@ public class FuncTcpServer extends Activity {
                     @Override
                     public void run() {
                         for (int i = 0; i <tcpServer.SST.size() ; i++) {
-                            TcpServer.ServerSocketThread thread = tcpServer.SST.get(i);
+                            TcpServerRunnable.ServerSocketThread thread = tcpServer.SST.get(i);
                             if (thread.socket.isConnected()){
                                 thread.send(serverSendMsg);
                             }
@@ -137,15 +137,15 @@ public class FuncTcpServer extends Activity {
 
 
     private class MyHandler extends Handler {
-        private final WeakReference<FuncTcpServer> mActivity;
+        private final WeakReference<ActivityFuncTcpServer> mActivity;
 
-        MyHandler(FuncTcpServer activity) {
-            mActivity = new WeakReference<FuncTcpServer>(activity);
+        MyHandler(ActivityFuncTcpServer activity) {
+            mActivity = new WeakReference<ActivityFuncTcpServer>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            FuncTcpServer activity = mActivity.get();
+            ActivityFuncTcpServer activity = mActivity.get();
             if (activity != null) {
                 switch (msg.what) {
                     case 1://接收区
@@ -241,7 +241,7 @@ public class FuncTcpServer extends Activity {
                 }
             }
         } catch (SocketException e) {
-            Log.i("FuncTcpServer", "SocketException");
+            Log.i("ActivityFuncTcpServer", "SocketException");
             e.printStackTrace();
         }
         return hostIp;
