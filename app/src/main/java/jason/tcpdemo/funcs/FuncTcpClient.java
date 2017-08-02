@@ -53,8 +53,6 @@ public class FuncTcpClient extends Activity {
             switch (view.getId()) {
                 case R.id.btn_ScanDevices:
 
-                 
-
                     break;
                 case R.id.btn_tcpClientConn:
                     Log.i(TAG, "onClick: 开始");
@@ -110,7 +108,7 @@ public class FuncTcpClient extends Activity {
             if (mActivity != null) {
                 switch (msg.what) {
                     case 1:
-                        txtRcv.append(msg.obj.toString());
+                        txtRcv.append(msg.obj.toString()+ "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {

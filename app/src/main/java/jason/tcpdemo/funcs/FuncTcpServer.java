@@ -59,10 +59,21 @@ public class FuncTcpServer extends Activity {
             if (activity!= null){
                 switch (msg.what){
                     case 1:
-                        txtRcv.append(msg.obj.toString());
+                        txtRcv.append(msg.obj.toString()+ "\r\n");
+                        int lines = txtRcv.getLineCount();
+                        int offset = lines * txtRcv.getLineHeight();
+                        if (offset > txtRcv.getHeight()) {
+                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
+                        }
+
                         break;
                     case 2:
                         txtSend.append(msg.obj.toString()+"\r\n");
+                        int lines2 = txtSend.getLineCount();
+                        int offset2 = lines2 * txtSend.getLineHeight();
+                        if (offset2 > txtSend.getHeight()) {
+                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
+                        }
                         break;
                 }
             }

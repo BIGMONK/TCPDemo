@@ -57,17 +57,20 @@ public class TcpClient implements Runnable {
 
     @Override
     public void run() {
-
         while (isRun) {
             while (socket == null || !socket.isConnected()) {
                 try {
                     Log.d(TAG, "run:  new Socket");
                     socket = new Socket(serverIP, serverPort);
+
 //            socket.setSoTimeout(5000);
                     pw = new PrintWriter(socket.getOutputStream(), true);
                     is = socket.getInputStream();
                     dis = new DataInputStream(is);
-                    Log.d(TAG, "run: 服务器已连接");
+                    Log.d(TAG, "run: 服务器已连接"+socket.getInetAddress().toString()
+                            +"  "+socket.getRemoteSocketAddress().toString()
+
+                    );
 
                 } catch (ConnectException e) {
                     e.printStackTrace();
