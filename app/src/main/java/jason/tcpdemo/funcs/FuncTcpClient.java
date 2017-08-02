@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
@@ -14,89 +15,113 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Handler;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import jason.tcpdemo.R;
-import jason.tcpdemo.ScanDeviceTool;
 import jason.tcpdemo.coms.TcpClient;
 
-
-/**
- * Created by Jason Zhu on 2017-04-24.
- * Email: cloud_happy@163.com
- */
-
 public class FuncTcpClient extends Activity {
+    @BindView(R.id.edit_tcpClientIp)
+    EditText editClientIp;
+    @BindView(R.id.edit_tcpClientPort)
+    EditText editClientPort;
+    @BindView(R.id.edit_tcpClientID)
+    EditText editTcpClientID;
+    @BindView(R.id.btn_tcpClientRandomID)
+    Button btnClientRandom;
+    @BindView(R.id.btn_tcpClientConn)
+    Button btnStartClient;
+    @BindView(R.id.btn_tcpClientClose)
+    Button btnCloseClient;
+    @BindView(R.id.btn_tcpCleanClientRecv)
+    Button btnCleanClientRcv;
+    @BindView(R.id.btn_tcpCleanClientSend)
+    Button btnCleanClientSend;
+    @BindView(R.id.txt_ClientRcv)
+    TextView txtRcv;
+    @BindView(R.id.txt_ClientSend)
+    TextView txtSend;
+    @BindView(R.id.edit_tcpClientSend)
+    EditText editClientSend;
+    @BindView(R.id.btn_tcpClientSend)
+    Button btnClientSend;
+    @BindView(R.id.btn_ScanDevices)
+    Button btnScanDevices;
+    @BindView(R.id.listview_Devices)
+    ListView listviewDevices;
     private String TAG = "FuncTcpClient";
     @SuppressLint("StaticFieldLeak")
     public static Context context;
-    private Button btnStartClient, btnCloseClient, btnCleanClientSend, btnCleanClientRcv, btnClientSend, btnClientRandom, btnScanDevices;
-    private TextView txtRcv, txtSend;
-    private EditText editClientSend, editClientID, editClientPort, editClientIp;
     private static TcpClient tcpClient = null;
-    private MyBtnClicker myBtnClicker = new MyBtnClicker();
     private final MyHandler myHandler = new MyHandler(this);
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
     ExecutorService exec = Executors.newCachedThreadPool();
     private String clientSendMsg;
 
-    private class MyBtnClicker implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.btn_ScanDevices:
-
-                    break;
-                case R.id.btn_tcpClientConn:
-                    Log.i(TAG, "onClick: 开始");
-                    btnStartClient.setEnabled(false);
-                    btnCloseClient.setEnabled(true);
-                    btnClientSend.setEnabled(true);
-                    tcpClient = new TcpClient(editClientIp.getText().toString(), getPort(editClientPort.getText().toString()));
-                    exec.execute(tcpClient);
-                    break;
-                case R.id.btn_tcpClientClose:
-                    tcpClient.closeSelf();
-                    btnStartClient.setEnabled(true);
-                    btnCloseClient.setEnabled(false);
-                    btnClientSend.setEnabled(false);
-                    break;
-                case R.id.btn_tcpCleanClientRecv:
-                    txtRcv.setText("");
-                    break;
-                case R.id.btn_tcpCleanClientSend:
-                    txtSend.setText("");
-                    break;
-                case R.id.btn_tcpClientRandomID:
-                    break;
-                case R.id.btn_tcpClientSend:
-                    Message tcpClientSendMessage = Message.obtain();
-                    tcpClientSendMessage.what = 2;
-                    clientSendMsg = editClientSend.getText().toString();
-                    if (TextUtils.isEmpty(clientSendMsg)) {
-                        clientSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
+    @OnClick({R.id.edit_tcpClientIp, R.id.edit_tcpClientPort, R.id.edit_tcpClientID,
+            R.id.btn_tcpClientRandomID, R.id.btn_tcpClientConn, R.id.btn_tcpClientClose,
+            R.id.btn_tcpCleanClientRecv, R.id.btn_tcpCleanClientSend,
+            R.id.edit_tcpClientSend, R.id.btn_tcpClientSend, R.id.btn_ScanDevices})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.edit_tcpClientIp:
+                break;
+            case R.id.edit_tcpClientPort:
+                break;
+            case R.id.edit_tcpClientID:
+                break;
+            case R.id.btn_tcpClientConn:
+                btnStartClient.setEnabled(false);
+                btnCloseClient.setEnabled(true);
+                btnClientSend.setEnabled(true);
+                tcpClient = new TcpClient(editClientIp.getText().toString(), getPort(editClientPort.getText().toString()));
+                exec.execute(tcpClient);
+                break;
+            case R.id.btn_tcpClientClose:
+                tcpClient.closeSelf();
+                btnStartClient.setEnabled(true);
+                btnCloseClient.setEnabled(false);
+                btnClientSend.setEnabled(false);
+                break;
+            case R.id.btn_tcpCleanClientRecv:
+                txtRcv.setText("");
+                break;
+            case R.id.btn_tcpCleanClientSend:
+                txtSend.setText("");
+                break;
+            case R.id.btn_tcpClientRandomID:
+                break;
+            case R.id.btn_tcpClientSend:
+                Message tcpClientSendMessage = Message.obtain();
+                tcpClientSendMessage.what = 2;
+                clientSendMsg = editClientSend.getText().toString();
+                if (TextUtils.isEmpty(clientSendMsg)) {
+                    clientSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
+                }
+                tcpClientSendMessage.obj = clientSendMsg;
+                myHandler.sendMessage(tcpClientSendMessage);
+                exec.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        tcpClient.send(clientSendMsg);
                     }
-                    tcpClientSendMessage.obj = clientSendMsg;
-                    myHandler.sendMessage(tcpClientSendMessage);
-                    exec.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            tcpClient.send(clientSendMsg);
-                        }
-                    });
-                    break;
-            }
+                });
+                break;
         }
+
     }
 
-    private class MyHandler extends android.os.Handler {
+
+    private class MyHandler extends Handler {
         private WeakReference<FuncTcpClient> mActivity;
 
         MyHandler(FuncTcpClient activity) {
@@ -108,7 +133,7 @@ public class FuncTcpClient extends Activity {
             if (mActivity != null) {
                 switch (msg.what) {
                     case 1:
-                        txtRcv.append(msg.obj.toString()+ "\r\n");
+                        txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
@@ -156,38 +181,13 @@ public class FuncTcpClient extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tcp_client);
+        ButterKnife.bind(this);
         context = this;
-        bindID();
-        bindListener();
-        bindReceiver();
-        Ini();
-    }
-
-
-    private void bindID() {
-        btnStartClient = (Button) findViewById(R.id.btn_tcpClientConn);
-        btnScanDevices = (Button) findViewById(R.id.btn_ScanDevices);
-        btnCloseClient = (Button) findViewById(R.id.btn_tcpClientClose);
-        btnCleanClientRcv = (Button) findViewById(R.id.btn_tcpCleanClientRecv);
-        btnCleanClientSend = (Button) findViewById(R.id.btn_tcpCleanClientSend);
-        btnClientRandom = (Button) findViewById(R.id.btn_tcpClientRandomID);
-        btnClientSend = (Button) findViewById(R.id.btn_tcpClientSend);
-        editClientPort = (EditText) findViewById(R.id.edit_tcpClientPort);
-        editClientIp = (EditText) findViewById(R.id.edit_tcpClientIp);
-        editClientSend = (EditText) findViewById(R.id.edit_tcpClientSend);
-        txtRcv = (TextView) findViewById(R.id.txt_ClientRcv);
         txtRcv.setMovementMethod(ScrollingMovementMethod.getInstance());
-        txtSend = (TextView) findViewById(R.id.txt_ClientSend);
-    }
+        btnCloseClient.setEnabled(false);
+        btnClientSend.setEnabled(false);
 
-    private void bindListener() {
-        btnScanDevices.setOnClickListener(myBtnClicker);
-        btnStartClient.setOnClickListener(myBtnClicker);
-        btnCloseClient.setOnClickListener(myBtnClicker);
-        btnCleanClientRcv.setOnClickListener(myBtnClicker);
-        btnCleanClientSend.setOnClickListener(myBtnClicker);
-        btnClientRandom.setOnClickListener(myBtnClicker);
-        btnClientSend.setOnClickListener(myBtnClicker);
+        bindReceiver();
     }
 
     private void bindReceiver() {
@@ -195,16 +195,11 @@ public class FuncTcpClient extends Activity {
         registerReceiver(myBroadcastReceiver, intentFilter);
     }
 
-    private void Ini() {
-        btnCloseClient.setEnabled(false);
-        btnClientSend.setEnabled(false);
-
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tcpClient.closeSelf();
-
+        if (tcpClient != null)
+            tcpClient.closeSelf();
     }
 }

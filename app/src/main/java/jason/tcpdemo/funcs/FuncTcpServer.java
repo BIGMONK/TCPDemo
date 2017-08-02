@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,9 @@ import java.util.Enumeration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import jason.tcpdemo.R;
 import jason.tcpdemo.coms.TcpServer;
 
@@ -34,11 +38,31 @@ import jason.tcpdemo.coms.TcpServer;
  */
 
 public class FuncTcpServer extends Activity {
-    private Button btnStartServer,btnCloseServer, btnCleanServerSend, btnCleanServerRcv,btnServerSend,btnServerRandom;
-    private TextView txtRcv,txtSend,txtServerIp;
-    private EditText editServerSend,editServerRandom, editServerPort;
+    @BindView(R.id.txt_Server_Ip)
+    TextView txtServerIp;
+    @BindView(R.id.edit_Server_Port)
+    EditText editServerPort;
+    @BindView(R.id.edit_Server_ID)
+    EditText editServerRandom;
+    @BindView(R.id.btn_tcpServerRandomID)
+    Button btnServerRandom;
+    @BindView(R.id.btn_tcpServerConn)
+    Button btnStartServer;
+    @BindView(R.id.btn_tcpServerClose)
+    Button btnCloseServer;
+    @BindView(R.id.btn_tcpCleanServerRecv)
+    Button btnCleanServerRcv;
+    @BindView(R.id.btn_tcpCleanServerSend)
+    Button btnCleanServerSend;
+    @BindView(R.id.txt_ServerRcv)
+    TextView txtRcv;
+    @BindView(R.id.txt_ServerSend)
+    TextView txtSend;
+    @BindView(R.id.edit_tcpClientSend)
+    EditText editServerSend;
+    @BindView(R.id.btn_tcpServerSend)
+    Button btnServerSend;
     private static TcpServer tcpServer = null;
-    private MyBtnClicker myBtnClicker = new MyBtnClicker();
     private final MyHandler myHandler = new MyHandler(this);
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
     @SuppressLint("StaticFieldLeak")
@@ -46,20 +70,81 @@ public class FuncTcpServer extends Activity {
     ExecutorService exec = Executors.newCachedThreadPool();
     private String serverSendMsg;
 
+    @OnClick({R.id.txt_Server_Ip, R.id.edit_Server_Port, R.id.edit_Server_ID,
+            R.id.btn_tcpServerRandomID, R.id.btn_tcpServerConn, R.id.btn_tcpServerClose,
+            R.id.btn_tcpCleanServerRecv, R.id.btn_tcpCleanServerSend, R.id.txt_ServerRcv,
+            R.id.txt_ServerSend, R.id.edit_tcpClientSend, R.id.btn_tcpServerSend})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
 
-    private class MyHandler extends android.os.Handler{
+            case R.id.txt_Server_Ip:
+                break;
+            case R.id.edit_Server_Port:
+                break;
+            case R.id.edit_Server_ID:
+                break;
+            case R.id.txt_ServerRcv:
+                break;
+            case R.id.txt_ServerSend:
+                break;
+            case R.id.edit_tcpClientSend:
+                break;
+            case R.id.btn_tcpServerConn:
+                Log.i("A", "onClick: 开始");
+                btnStartServer.setEnabled(false);
+                btnCloseServer.setEnabled(true);
+                btnServerSend.setEnabled(true);
+                tcpServer = new TcpServer(getHost(editServerPort.getText().toString()));
+                exec.execute(tcpServer);
+                break;
+            case R.id.btn_tcpServerClose:
+                tcpServer.closeSelf();
+                btnStartServer.setEnabled(true);
+                btnCloseServer.setEnabled(false);
+                btnServerSend.setEnabled(false);
+                break;
+            case R.id.btn_tcpCleanServerRecv:
+                txtRcv.setText("");
+                break;
+            case R.id.btn_tcpCleanServerSend:
+                txtSend.setText("");
+                break;
+            case R.id.btn_tcpServerRandomID:
+                break;
+            case R.id.btn_tcpServerSend:
+                Message message = Message.obtain();
+                message.what = 2;
+                serverSendMsg = editServerSend.getText().toString();
+                if (TextUtils.isEmpty(serverSendMsg)) {
+                    serverSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
+                }
+                message.obj = serverSendMsg;
+                myHandler.sendMessage(message);
+                exec.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        tcpServer.SST.get(0).send(serverSendMsg);
+                    }
+                });
+                break;
+        }
+    }
+
+
+    private class MyHandler extends Handler {
         private final WeakReference<FuncTcpServer> mActivity;
-        MyHandler(FuncTcpServer activity){
+
+        MyHandler(FuncTcpServer activity) {
             mActivity = new WeakReference<FuncTcpServer>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
             FuncTcpServer activity = mActivity.get();
-            if (activity!= null){
-                switch (msg.what){
+            if (activity != null) {
+                switch (msg.what) {
                     case 1:
-                        txtRcv.append(msg.obj.toString()+ "\r\n");
+                        txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
@@ -68,7 +153,7 @@ public class FuncTcpServer extends Activity {
 
                         break;
                     case 2:
-                        txtSend.append(msg.obj.toString()+"\r\n");
+                        txtSend.append(msg.obj.toString() + "\r\n");
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
                         if (offset2 > txtSend.getHeight()) {
@@ -80,12 +165,12 @@ public class FuncTcpServer extends Activity {
         }
     }
 
-    private class MyBroadcastReceiver extends BroadcastReceiver{
+    private class MyBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             String mAction = intent.getAction();
-            switch (mAction){
+            switch (mAction) {
                 case "tcpServerReceiver":
                     String msg = intent.getStringExtra("tcpServerReceiver");
                     Message message = Message.obtain();
@@ -97,60 +182,13 @@ public class FuncTcpServer extends Activity {
         }
     }
 
-    private void bindReceiver(){
+    private void bindReceiver() {
         IntentFilter intentFilter = new IntentFilter("tcpServerReceiver");
-        registerReceiver(myBroadcastReceiver,intentFilter);
+        registerReceiver(myBroadcastReceiver, intentFilter);
     }
 
-    private class MyBtnClicker implements View.OnClickListener{
-
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()){
-                case R.id.btn_tcpServerConn:
-                    Log.i("A", "onClick: 开始");
-                    btnStartServer.setEnabled(false);
-                    btnCloseServer.setEnabled(true);
-                    btnServerSend.setEnabled(true);
-                    tcpServer = new TcpServer(getHost(editServerPort.getText().toString()));
-                    exec.execute(tcpServer);
-                    break;
-                case R.id.btn_tcpServerClose:
-                    tcpServer.closeSelf();
-                    btnStartServer.setEnabled(true);
-                    btnCloseServer.setEnabled(false);
-                    btnServerSend.setEnabled(false);
-                    break;
-                case R.id.btn_tcpCleanServerRecv:
-                    txtRcv.setText("");
-                    break;
-                case R.id.btn_tcpCleanServerSend:
-                    txtSend.setText("");
-                    break;
-                case R.id.btn_tcpServerRandomID:
-                    break;
-                case R.id.btn_tcpServerSend:
-                    Message message = Message.obtain();
-                    message.what = 2;
-                    serverSendMsg = editServerSend.getText().toString();
-                    if (TextUtils.isEmpty(serverSendMsg)){
-                        serverSendMsg =new Date().toString()+"  "+System.currentTimeMillis();
-                    }
-                    message.obj = serverSendMsg;
-                    myHandler.sendMessage(message);
-                    exec.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            tcpServer.SST.get(0).send(serverSendMsg);
-                        }
-                    });
-                    break;
-            }
-        }
-    }
-
-    private int getHost(String msg){
-        if (msg.equals("")){
+    private int getHost(String msg) {
+        if (msg.equals("")) {
             msg = "1234";
         }
         return Integer.parseInt(msg);
@@ -160,45 +198,20 @@ public class FuncTcpServer extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.tcp_server);
+        ButterKnife.bind(this);
         context = this;
-        bindID();
-        bindListener();
-        bindReceiver();
-        ini();
-    }
 
-    private void ini(){
+        bindReceiver();
+
         btnCloseServer.setEnabled(false);
         btnServerSend.setEnabled(false);
         txtServerIp.setText(getHostIP());
     }
 
-    private void bindListener() {
-        btnStartServer.setOnClickListener(myBtnClicker);
-        btnCloseServer.setOnClickListener(myBtnClicker);
-        btnCleanServerRcv.setOnClickListener(myBtnClicker);
-        btnCleanServerSend.setOnClickListener(myBtnClicker);
-        btnServerRandom.setOnClickListener(myBtnClicker);
-        btnServerSend.setOnClickListener(myBtnClicker);
-    }
-
-    private void bindID() {
-        btnStartServer = (Button) findViewById(R.id.btn_tcpServerConn);
-        btnCloseServer = (Button) findViewById(R.id.btn_tcpServerClose);
-        btnCleanServerRcv = (Button) findViewById(R.id.btn_tcpCleanServerRecv);
-        btnCleanServerSend = (Button) findViewById(R.id.btn_tcpCleanServerSend);
-        btnServerRandom = (Button) findViewById(R.id.btn_tcpServerRandomID);
-        btnServerSend = (Button) findViewById(R.id.btn_tcpServerSend);
-        txtRcv = (TextView) findViewById(R.id.txt_ServerRcv);
-        txtSend = (TextView) findViewById(R.id.txt_ServerSend);
-        txtServerIp = (TextView) findViewById(R.id.txt_Server_Ip);
-        editServerRandom = (EditText) findViewById(R.id.edit_Server_ID);
-        editServerSend = (EditText) findViewById(R.id.edit_tcpClientSend);
-        editServerPort = (EditText)findViewById(R.id.edit_Server_Port);
-    }
 
     /**
      * 获取ip地址
+     *
      * @return
      */
     public String getHostIP() {
@@ -229,8 +242,6 @@ public class FuncTcpServer extends Activity {
         return hostIp;
 
     }
-
-
 
 
 }
