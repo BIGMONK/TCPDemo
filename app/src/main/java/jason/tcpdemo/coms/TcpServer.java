@@ -59,7 +59,6 @@ public class TcpServer implements Runnable{
             serverSocket.setSoTimeout(5000);
             while (isListen){
                 Log.i(TAG, "run: 开始监听...");
-
                 Socket socket = getSocket(serverSocket);
                 if (socket != null){
                     new ServerSocketThread(socket);
@@ -73,7 +72,7 @@ public class TcpServer implements Runnable{
     }
 
     public class ServerSocketThread extends Thread{
-        Socket socket = null;
+       public Socket socket = null;
         private PrintWriter pw;
         private InputStream is = null;
         private OutputStream os = null;

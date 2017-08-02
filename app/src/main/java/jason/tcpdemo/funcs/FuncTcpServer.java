@@ -123,7 +123,12 @@ public class FuncTcpServer extends Activity {
                 exec.execute(new Runnable() {
                     @Override
                     public void run() {
-                        tcpServer.SST.get(0).send(serverSendMsg);
+                        for (int i = 0; i <tcpServer.SST.size() ; i++) {
+                            TcpServer.ServerSocketThread thread = tcpServer.SST.get(i);
+                            if (thread.socket.isConnected()){
+                                thread.send(serverSendMsg);
+                            }
+                        }
                     }
                 });
                 break;

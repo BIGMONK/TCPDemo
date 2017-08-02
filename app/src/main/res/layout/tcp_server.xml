@@ -2,115 +2,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="5"
-    >
+    android:weightSum="5">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="本机ip:"/>
+                android:text="本机ip:" />
+
             <TextView
+                android:id="@+id/txt_Server_Ip"
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:id="@+id/txt_Server_Ip"/>
+                android:layout_weight="2"
+                android:gravity="center" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="port"/>
+                android:text="port" />
 
             <EditText
                 android:id="@+id/edit_Server_Port"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:hint="5000"
+                android:hint="1234"
                 android:inputType="number" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ID(英文或数字):"/>
+                android:text="ID(英文或数字):" />
+
             <EditText
+                android:id="@+id/edit_Server_ID"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:id="@+id/edit_Server_ID"/>
+                android:layout_weight="1" />
+
             <Button
+                android:id="@+id/btn_tcpServerRandomID"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="随机生成"
-                android:id="@+id/btn_tcpServerRandomID"/>
+                android:text="随机生成" />
         </LinearLayout>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
+
         <Button
+            android:id="@+id/btn_tcpServerConn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="开启"
-            android:id="@+id/btn_tcpServerConn"/>
+            android:text="开启" />
+
         <Button
+            android:id="@+id/btn_tcpServerClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="关闭"
-            android:id="@+id/btn_tcpServerClose"/>
+            android:text="关闭" />
+
         <Button
+            android:id="@+id/btn_tcpCleanServerRecv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除接收区"
-            android:id="@+id/btn_tcpCleanServerRecv"/>
+            android:text="清除接收区" />
+
         <Button
+            android:id="@+id/btn_tcpCleanServerSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除发送区"
-            android:id="@+id/btn_tcpCleanServerSend"/>
+            android:text="清除发送区" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="bottom"
             android:text="接收区：" />
+
         <TextView
-            android:layout_width="match_parent"
-            android:layout_weight="5"
-            android:layout_height="0dp"
             android:id="@+id/txt_ServerRcv"
-            android:background="@android:color/holo_blue_light"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:background="@android:color/holo_blue_light" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -127,20 +141,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="horizontal"
-            android:layout_weight="2">
+            android:layout_weight="2"
+            android:orientation="horizontal">
+
             <EditText
-                android:layout_width="0dp"
-                android:layout_weight="5"
                 android:id="@+id/edit_tcpClientSend"
-                android:layout_height="match_parent" />
-            <Button
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:layout_weight="5" />
+
+            <Button
+                android:id="@+id/btn_tcpServerSend"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
-                android:id="@+id/btn_tcpServerSend"
-                android:text="发送"/>
+                android:layout_weight="1"
+                android:text="发送" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
