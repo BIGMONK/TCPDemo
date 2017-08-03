@@ -107,9 +107,13 @@ public class ActivityFuncTcpServer extends Activity {
                 break;
             case R.id.btn_tcpCleanServerRecv:
                 txtRcv.setText("");
+                txtRcv.scrollTo(0,0);
+
                 break;
             case R.id.btn_tcpCleanServerSend:
                 txtSend.setText("");
+                txtSend.scrollTo(0,0);
+
                 break;
             case R.id.btn_tcpServerRandomID:
                 break;
@@ -152,21 +156,35 @@ public class ActivityFuncTcpServer extends Activity {
                 switch (msg.what) {
                     case 1://接收区
 
+                        if (txtRcv.getLineCount()>20){
+                            txtRcv.setText("");
+                            txtRcv.scrollTo(0,0);
+                        }
+
                         txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
-                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
+//                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
+                            txtRcv.scrollBy(0,txtRcv.getLineHeight());
+
                         }
 
                         break;
                     case 2:
 
+                        if (txtSend.getLineCount()>20){
+                            txtSend.setText("");
+                            txtSend.scrollTo(0,0);
+                        }
+
                         txtSend.append(msg.obj.toString() + "\r\n");
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
                         if (offset2 > txtSend.getHeight()) {
-                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
+//                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
+                            txtSend.scrollBy(0,txtSend.getLineHeight());
+
                         }
                         break;
                 }

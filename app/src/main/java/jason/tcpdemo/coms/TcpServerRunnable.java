@@ -117,14 +117,14 @@ public class TcpServerRunnable implements Runnable {
             );
             Intent intent = new Intent();
             intent.setAction("tcpServerReceiver");
-            intent.putExtra("tcpServerReceiver", "ServerSocketThread:检测到新的客户端联入,ip:" + ip);
+            intent.putExtra("tcpServerReceiver", "ServerSocketThread:检测到新的客户端联入:" + socket.getRemoteSocketAddress());
             ActivityFuncTcpServer.context.sendBroadcast(intent);//将消息发送给主界面
             try {
                 socket.setSoTimeout(5000);
                 os = socket.getOutputStream();
                 is = socket.getInputStream();
                 pw = new PrintWriter(os, true);
-                send("" + new Date().toString() + "服务器已收到连接请求并建立连接");
+                send("" + new Date().toString() + "服务器已收到"+socket.getRemoteSocketAddress()+"的请求并建立连接");
                 start();
             } catch (SocketException e) {
                 e.printStackTrace();

@@ -1,6 +1,7 @@
 package jason.tcpdemo.coms;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -10,7 +11,10 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import jason.tcpdemo.funcs.ActivityFuncTcpClient;
 
@@ -31,6 +35,7 @@ public class TcpClientRunnable implements Runnable {
     byte buff[] = new byte[4096];
     private String rcvMsg;
     private int rcvLen;
+    private Intent intent;
 
     public TcpClientRunnable(String ip, int port) {
         this.serverIP = ip;
@@ -54,11 +59,11 @@ public class TcpClientRunnable implements Runnable {
     }
 
     public void send(String msg) {
-        if (socket != null && socket.isConnected()) {
+        if (socket != null && pw!=null) {
             pw.println(msg);
             pw.flush();
         } else {
-            Log.e(TAG, "send: socket.isConnected()=" + socket.isConnected());
+            Log.e(TAG, "send: socket 未连接");
         }
     }
 
@@ -74,9 +79,11 @@ public class TcpClientRunnable implements Runnable {
 
     private void createSocket() {
         if (isRun) {
-            Intent intent = new Intent();
-            intent.setAction("tcpClientReceiver");
-            intent.putExtra("tcpClientReceiver", "正在连接到服务器……");
+            if (intent == null) {
+                intent = new Intent();
+                intent.setAction("tcpClientReceiver");
+            }
+            intent.putExtra("tcpClientReceiver", "正在连接到服务器……"+new Date().toString());
             ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
             isWhile = true;
             try {
@@ -87,26 +94,40 @@ public class TcpClientRunnable implements Runnable {
                 pw = new PrintWriter(socket.getOutputStream(), true);
                 is = socket.getInputStream();
                 dis = new DataInputStream(is);
-            } catch (IOException e) {
+            } catch (ConnectException e) {
                 e.printStackTrace();
                 Log.e(TAG, "run: 连接服务器( new Socket)失败  " + this.toString()
                         + "  " + e.toString());
+                if (intent == null) {
+                    intent = new Intent();
+                    intent.setAction("tcpClientReceiver");
+                }
+                intent.putExtra("tcpClientReceiver", "连接服务器失败……"+new Date().toString());
+                ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                 try {
                     Thread.sleep(5000);//重新创建socke的时间间隔
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
                 createSocket();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        while (isRun && isWhile) {
+        while (isRun && isWhile&&dis!=null) {
             try {
                 rcvLen = dis.read(buff);
                 if (rcvLen > 0) {
                     rcvMsg = new String(buff, 0, rcvLen, "utf-8");
                     Log.i(TAG, "run: 收到消息: rcvLen=" + rcvLen + "   rcvMsg=" + rcvMsg + "  " + dis.toString());
-                    Intent intent = new Intent();
-                    intent.setAction("tcpClientReceiver");
+                    if (intent == null) {
+                        intent = new Intent();
+                        intent.setAction("tcpClientReceiver");
+                    }
                     intent.putExtra("tcpClientReceiver", rcvMsg);
                     ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                     if (rcvMsg.equals("QuitClient")) {   //服务器要求客户端结束
@@ -118,8 +139,10 @@ public class TcpClientRunnable implements Runnable {
                             + "  dis=" + dis.toString()
                             + "  is=" + is.toString()
                     );
-                    Intent intent = new Intent();
-                    intent.setAction("tcpClientReceiver");
+                    if (intent == null) {
+                        intent = new Intent();
+                        intent.setAction("tcpClientReceiver");
+                    }
                     intent.putExtra("tcpClientReceiver", "服务器已断开");
                     ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                     isWhile = false;
@@ -134,13 +157,42 @@ public class TcpClientRunnable implements Runnable {
                         + "  dis=" + dis.toString()
                         + "  UnsupportedEncodingException=" + e.toString()
                 );
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                Log.e(TAG, "run: " + this.toString()
+                        + "  dis=" + dis.toString()
+                        + "  InterruptedException=" + e.toString());
+            } catch (SocketTimeoutException e) {
+                e.printStackTrace();
+                Log.e(TAG, "run: " + this.toString()
+                        + "  dis=" + dis.toString()
+                        + "  SocketTimeoutException=" + e.toString()
+                        + "  e.getCause()=" + e.getCause()
+                        + "  e.getMessage()=" + e.getMessage());
+            } catch (SocketException e) {
+                e.printStackTrace();
+                Log.e(TAG, "run: " + this.toString()
+                        + "  dis=" + dis.toString()
+                        + "  SocketException=" + e.toString()
+                        + "  e.getCause()=" + e.getCause()
+                        + "  e.getMessage()=" + e.getMessage()
+                );
+
+                String msg = e.getMessage();
+                if (!TextUtils.isEmpty(msg) && msg.equals("Socket closed")) {
+                    if (intent == null) {
+                        intent = new Intent();
+                        intent.setAction("tcpClientReceiver");
+                    }
+                    intent.putExtra("tcpClientReceiver", "客户端已断开连接");
+                    ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
+                }
+
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  IOException=" + e.toString());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         closeSelf();

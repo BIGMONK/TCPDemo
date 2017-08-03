@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,24 +79,26 @@ public class ActivityFuncTcpClient extends Activity {
                 break;
             case R.id.edit_tcpClientID:
                 break;
-            case R.id.btn_tcpClientConn:
+            case R.id.btn_tcpClientConn://连接
                 btnStartClient.setEnabled(false);
                 btnCloseClient.setEnabled(true);
                 btnClientSend.setEnabled(true);
                 tcpClient = new TcpClientRunnable(editClientIp.getText().toString(), getPort(editClientPort.getText().toString()));
                 exec.execute(tcpClient);
                 break;
-            case R.id.btn_tcpClientClose:
+            case R.id.btn_tcpClientClose://断开
                 tcpClient.closeSelf();
                 btnStartClient.setEnabled(true);
                 btnCloseClient.setEnabled(false);
                 btnClientSend.setEnabled(false);
                 break;
-            case R.id.btn_tcpCleanClientRecv:
+            case R.id.btn_tcpCleanClientRecv://清空接收区
                 txtRcv.setText("");
+                txtRcv.scrollTo(0,0);
                 break;
-            case R.id.btn_tcpCleanClientSend:
+            case R.id.btn_tcpCleanClientSend://清空发送区
                 txtSend.setText("");
+                txtSend.scrollTo(0,0);
                 break;
             case R.id.btn_tcpClientRandomID:
                 break;
@@ -132,20 +135,33 @@ public class ActivityFuncTcpClient extends Activity {
             if (mActivity != null) {
                 switch (msg.what) {
                     case 1:
+                        if (txtRcv.getLineCount()>20){
+                            txtRcv.setText("");
+                            txtRcv.scrollTo(0,0);
+                        }
                         txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
-                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
+//                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
+                            txtRcv.scrollBy(0,txtRcv.getLineHeight());
                         }
                         break;
                     case 2:
+                        if (txtSend.getLineCount()>20){
+                            txtSend.setText("");
+                            txtSend.scrollTo(0,0);
+                        }
                         txtSend.append(msg.obj.toString() + "\r\n");
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
                         if (offset2 > txtSend.getHeight()) {
-                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
+//                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
+                            txtSend.scrollBy(0,txtSend.getLineHeight());
                         }
+                        Log.d(TAG, "handleMessage: 高度=txtSend.getHeight()="+txtSend.getHeight()
+                        + "  offset2="+offset2
+                        );
                         break;
                 }
             }
