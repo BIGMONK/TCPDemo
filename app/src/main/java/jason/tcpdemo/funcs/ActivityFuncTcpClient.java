@@ -193,10 +193,9 @@ public class ActivityFuncTcpClient extends Activity {
         IntentFilter intentFilter = new IntentFilter("tcpClientReceiver");
         registerReceiver(myBroadcastReceiver, intentFilter);
     }
-
-
     @Override
     protected void onDestroy() {
+        unregisterReceiver(myBroadcastReceiver);
         super.onDestroy();
         if (tcpClient != null)
             tcpClient.closeSelf();

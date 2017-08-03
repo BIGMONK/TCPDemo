@@ -32,6 +32,8 @@ import butterknife.OnClick;
 import jason.tcpdemo.R;
 import jason.tcpdemo.coms.TcpServerRunnable;
 
+import static android.R.attr.offset;
+
 /**
  * Created by Jason Zhu on 2017-04-24.
  * Email: cloud_happy@163.com
@@ -149,6 +151,7 @@ public class ActivityFuncTcpServer extends Activity {
             if (activity != null) {
                 switch (msg.what) {
                     case 1://接收区
+
                         txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
@@ -158,6 +161,7 @@ public class ActivityFuncTcpServer extends Activity {
 
                         break;
                     case 2:
+
                         txtSend.append(msg.obj.toString() + "\r\n");
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
@@ -248,5 +252,10 @@ public class ActivityFuncTcpServer extends Activity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(myBroadcastReceiver);
+        super.onDestroy();
 
+    }
 }
