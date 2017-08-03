@@ -124,6 +124,7 @@ public class ActivityFuncTcpServer extends Activity {
                 if (TextUtils.isEmpty(serverSendMsg)) {
                     serverSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
                 }
+                serverSendMsg+="(From:"+tcpServer.getLocalSocketAdd()+")";
                 message.obj = serverSendMsg;
                 myHandler.sendMessage(message);
                 exec.execute(new Runnable() {

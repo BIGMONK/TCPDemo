@@ -29,7 +29,12 @@ public class TcpServerRunnable implements Runnable {
     private boolean isListen = true;   //线程监听标志位
     public ArrayList<ServerSocketThread> SST = new ArrayList<ServerSocketThread>();
     private ServerSocket serverSocket;
-
+    public String getLocalSocketAdd() {
+        if (serverSocket==null){
+            return "serverSocket=null";
+        }
+        return serverSocket.getLocalSocketAddress().toString();
+    }
     public TcpServerRunnable(int port) {
         this.port = port;
     }

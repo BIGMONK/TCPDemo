@@ -109,6 +109,7 @@ public class ActivityFuncTcpClient extends Activity {
                 if (TextUtils.isEmpty(clientSendMsg)) {
                     clientSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
                 }
+                clientSendMsg+="(From:"+tcpClient.getLocalSocketAdd()+")";
                 tcpClientSendMessage.obj = clientSendMsg;
                 myHandler.sendMessage(tcpClientSendMessage);
                 exec.execute(new Runnable() {

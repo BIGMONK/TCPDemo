@@ -31,6 +31,14 @@ public class TcpClientRunnable implements Runnable {
     private InputStream is;
     private DataInputStream dis;
     private boolean isRun = true;
+
+    public String getLocalSocketAdd() {
+        if (socket==null){
+            return "socket=null";
+        }
+        return socket.getLocalSocketAddress().toString();
+    }
+
     private Socket socket = null;
     byte buff[] = new byte[4096];
     private String rcvMsg;
@@ -92,6 +100,12 @@ public class TcpClientRunnable implements Runnable {
             try {
                 socket = new Socket(serverIP, serverPort);
                 socket.setSoTimeout(5000);
+                if (intent == null) {
+                    intent = new Intent();
+                    intent.setAction("tcpClientReceiver");
+                }
+                intent.putExtra("tcpClientReceiver", "连接服务器成功……" + new Date().toString());
+                ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                 Log.e(TAG, "run: 服务器已连接" + socket.toString()
                         + "  " + socket.getRemoteSocketAddress().toString());
                 pw = new PrintWriter(socket.getOutputStream(), true);
