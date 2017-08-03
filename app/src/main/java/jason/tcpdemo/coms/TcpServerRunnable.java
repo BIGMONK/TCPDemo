@@ -15,6 +15,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import jason.tcpdemo.funcs.ActivityFuncTcpClient;
 import jason.tcpdemo.funcs.ActivityFuncTcpServer;
 
 /**
@@ -52,7 +53,7 @@ public class TcpServerRunnable implements Runnable {
                 Log.e(TAG, "TcpServerRunnable closeSelf  IOException "
                         + this.toString()
                         + "  serverSocket=" + serverSocket.toString()
-                        + "  "+e.toString());
+                        + "  " + e.toString());
 
             }
         }
@@ -63,9 +64,9 @@ public class TcpServerRunnable implements Runnable {
             return serverSocket.accept();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run getSocket IOException  "  + this.toString()
+            Log.e(TAG, "TcpServerRunnable run getSocket IOException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
-                    + "  "+e.toString());
+                    + "  " + e.toString());
             return null;
         }
     }
@@ -76,9 +77,9 @@ public class TcpServerRunnable implements Runnable {
             serverSocket = new ServerSocket(port);
             serverSocket.setSoTimeout(5000);
             while (isListen) {
-                Log.i(TAG, "run: 开始监听..."  + this.toString()
+                Log.i(TAG, "run: 开始监听..." + this.toString()
                         + "  serverSocket=" + serverSocket.toString()
-                       );
+                );
                 Socket socket = getSocket(serverSocket);
                 if (socket != null) {
                     new ServerSocketThread(socket);
@@ -87,15 +88,15 @@ public class TcpServerRunnable implements Runnable {
             serverSocket.close();
         } catch (SocketException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run  SocketTimeoutException  "  + this.toString()
+            Log.e(TAG, "TcpServerRunnable run  SocketTimeoutException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
-                    + "  "+e.toString());
+                    + "  " + e.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run  IOException  "  + this.toString()
+            Log.e(TAG, "TcpServerRunnable run  IOException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
-                    + "  "+e.toString());
+                    + "  " + e.toString());
 
         }
     }
@@ -107,6 +108,7 @@ public class TcpServerRunnable implements Runnable {
         private OutputStream os = null;
         private String ip = null;
         private boolean isRun = true;
+        private Intent intent;
 
         ServerSocketThread(Socket socket) {
             this.socket = socket;
@@ -124,7 +126,7 @@ public class TcpServerRunnable implements Runnable {
                 os = socket.getOutputStream();
                 is = socket.getInputStream();
                 pw = new PrintWriter(os, true);
-                send("" + new Date().toString() + "服务器已收到"+socket.getRemoteSocketAddress()+"的请求并建立连接");
+                send("" + new Date().toString() + "服务器已收到" + socket.getRemoteSocketAddress() + "的请求并建立连接");
                 start();
             } catch (SocketException e) {
                 e.printStackTrace();
@@ -155,34 +157,66 @@ public class TcpServerRunnable implements Runnable {
             String rcvMsg;
             int rcvLen;
             SST.add(this);
-            while (isRun && !socket.isClosed() && !socket.isInputShutdown()) {
+            while (isRun && is != null) {
                 try {
+                    Log.d(TAG, "ServerSocketThread run: socket.isClosed()=" + socket.isClosed()
+                            + "  socket.isInputShutdown()=" + socket.isInputShutdown()
+                    );
                     if ((rcvLen = is.read(buff)) != -1) {
                         rcvMsg = new String(buff, 0, rcvLen, "utf-8");
-                        Log.i(TAG, "run:收到消息: " + rcvMsg);
-                        Intent intent = new Intent();
+                        Log.i(TAG, "ServerSocketThread run:收到消息: " + rcvMsg);
+                        intent = new Intent();
                         intent.setAction("tcpServerReceiver");
                         intent.putExtra("tcpServerReceiver", rcvMsg);
                         ActivityFuncTcpServer.context.sendBroadcast(intent);//将消息发送给主界面
                         if (rcvMsg.equals("QuitServer")) {
                             isRun = false;
                         }
+                    } else {
+                        Log.i(TAG, "ServerSocketThread run: 收到消息:客户端关闭时read不阻塞 read返回-1  "
+                                + "  rcvLen=" + rcvLen
+                                + "  is=" + is.toString());
+                        if (intent == null) {
+                            intent = new Intent();
+                            intent.setAction("tcpServerReceiver");
+                        }
+                        intent.putExtra("tcpServerReceiver", "客户端"+ socket.getRemoteSocketAddress() + "断开连接");
+                        ActivityFuncTcpServer.context.sendBroadcast(intent);//将消息发送给主界面
+                        isRun=false;
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();
                     Log.e(TAG, "ServerSocketThread run SocketException  "
                             + this.toString()
                             + "  socket=" + socket.toString()
-                            + "  " + e.toString());
-                    isRun = false;//客户端主动断开 会抛异常
+                            + "  " + e.toString()
+                    );
+                    String cause = e.getCause().toString();
+                    if (cause.contains("recvfrom failed: ECONNRESET (Connection reset by peer)")) {
+                        isRun = false;//客户端主动断开 会抛异常
+                        Log.e(TAG, "ServerSocketThread run SocketException  "
+                                + this.toString()
+                                + "  客户端断开连接"
+                        );
+                        Intent intent = new Intent();
+                        intent.setAction("tcpServerReceiver");
+                        intent.putExtra("tcpServerReceiver", "客户端" + socket.getRemoteSocketAddress() + "断开连接");
+                        ActivityFuncTcpServer.context.sendBroadcast(intent);//将消息发送给主界面
+
+                    }
                 } catch (SocketTimeoutException e) {
                     e.printStackTrace();
                     Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "
                             + this.toString()
                             + "  socket=" + socket.toString()
                             + "  " + e.toString());
-                    if (!socket.isConnected())
-                        isRun = false;//超时停止循环断开该socket； 服务器与客户端 超时无数据传输 抛异常；超时仅仅抛异常并不会导致socket主动断开
+//                    if (!socket.isConnected()) {
+//                        Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "
+//                                + this.toString()
+//                                + "   isRun = false"
+//                                + "  " + e.toString());
+//                        isRun = false;//超时停止循环断开该socket； 服务器与客户端 超时无数据传输 抛异常；超时仅仅抛异常并不会导致socket主动断开
+//                    }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     Log.e(TAG, "ServerSocketThread run UnsupportedEncodingException "

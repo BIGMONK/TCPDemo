@@ -47,19 +47,22 @@ public class TcpClientRunnable implements Runnable {
         try {
             if (pw != null)
                 pw.close();
-            if (is != null)
-                is.close();
             if (dis != null)
                 dis.close();
-            if (socket != null)
+            if (is != null)
+                is.close();
+            if (socket != null) {
+                socket.shutdownInput();
+                socket.shutdownOutput();
                 socket.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void send(String msg) {
-        if (socket != null && pw!=null) {
+        if (socket != null && pw != null) {
             pw.println(msg);
             pw.flush();
         } else {
@@ -83,7 +86,7 @@ public class TcpClientRunnable implements Runnable {
                 intent = new Intent();
                 intent.setAction("tcpClientReceiver");
             }
-            intent.putExtra("tcpClientReceiver", "正在连接到服务器……"+new Date().toString());
+            intent.putExtra("tcpClientReceiver", "正在连接服务器……" + new Date().toString());
             ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
             isWhile = true;
             try {
@@ -102,7 +105,7 @@ public class TcpClientRunnable implements Runnable {
                     intent = new Intent();
                     intent.setAction("tcpClientReceiver");
                 }
-                intent.putExtra("tcpClientReceiver", "连接服务器失败……"+new Date().toString());
+                intent.putExtra("tcpClientReceiver", "连接服务器失败……" + new Date().toString());
                 ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                 try {
                     Thread.sleep(5000);//重新创建socke的时间间隔
@@ -118,7 +121,7 @@ public class TcpClientRunnable implements Runnable {
                 e.printStackTrace();
             }
         }
-        while (isRun && isWhile&&dis!=null) {
+        while (isRun && isWhile && dis != null) {
             try {
                 rcvLen = dis.read(buff);
                 if (rcvLen > 0) {
@@ -134,7 +137,7 @@ public class TcpClientRunnable implements Runnable {
                         isRun = false;
                     }
                 } else {
-                    Log.i(TAG, "run: 收到消息:服务器关闭时read不阻塞  "
+                    Log.i(TAG, "run: 收到消息:服务器关闭时read不阻塞 read返回-1  "
                             + "  rcvLen=" + rcvLen
                             + "  dis=" + dis.toString()
                             + "  is=" + is.toString()
