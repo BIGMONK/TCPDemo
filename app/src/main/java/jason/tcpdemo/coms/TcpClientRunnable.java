@@ -33,7 +33,7 @@ public class TcpClientRunnable implements Runnable {
     private boolean isRun = true;
 
     public String getLocalSocketAdd() {
-        if (socket==null){
+        if (socket == null) {
             return "socket=null";
         }
         return socket.getLocalSocketAddress().toString();
@@ -94,7 +94,8 @@ public class TcpClientRunnable implements Runnable {
                 intent = new Intent();
                 intent.setAction("tcpClientReceiver");
             }
-            intent.putExtra("tcpClientReceiver", "正在连接服务器……" + new Date().toString());
+            intent.putExtra("tcpClientReceiver", "正在连接服务器:" + serverIP + ":" + serverPort
+                    + "…" + new Date().toString());
             ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
             isWhile = true;
             try {
@@ -104,22 +105,25 @@ public class TcpClientRunnable implements Runnable {
                     intent = new Intent();
                     intent.setAction("tcpClientReceiver");
                 }
-                intent.putExtra("tcpClientReceiver", "连接服务器成功……" + new Date().toString());
+                intent.putExtra("tcpClientReceiver", "连接服务器成功:" + serverIP + ":"
+                        + serverPort + "…" + new Date().toString());
                 ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
-                Log.e(TAG, "run: 服务器已连接" + socket.toString()
+                Log.e(TAG, "run: 连接服务器成功" + socket.toString()
                         + "  " + socket.getRemoteSocketAddress().toString());
                 pw = new PrintWriter(socket.getOutputStream(), true);
                 is = socket.getInputStream();
                 dis = new DataInputStream(is);
             } catch (ConnectException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: 连接服务器( new Socket)失败  " + this.toString()
+                Log.e(TAG, "run: 连接服务器失败:" + serverIP + ":"
+                        + serverPort + "…" + this.toString()
                         + "  " + e.toString());
                 if (intent == null) {
                     intent = new Intent();
                     intent.setAction("tcpClientReceiver");
                 }
-                intent.putExtra("tcpClientReceiver", "连接服务器失败……" + new Date().toString());
+                intent.putExtra("tcpClientReceiver", "连接服务器失败:" + serverIP + ":"
+                        + serverPort + "…"+ new Date().toString());
                 ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
                 try {
                     Thread.sleep(5000);//重新创建socke的时间间隔

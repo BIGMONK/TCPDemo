@@ -17,19 +17,69 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ip:" />
 
-            <EditText
-                android:id="@+id/edit_tcpClientIp"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="0px"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="192.168.0.104" />
+                android:layout_weight="2.2"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_tcpClientIp1"
+                    android:layout_width="110px"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:inputType="number"
+                    android:text="192" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="." />
+
+                <EditText
+                    android:id="@+id/edit_tcpClientIp2"
+                    android:layout_width="110px"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:inputType="number"
+                    android:text="168" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="." />
+
+                <EditText
+                    android:id="@+id/edit_tcpClientIp3"
+                    android:layout_width="110px"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:inputType="number"
+                    android:text="0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="." />
+
+                <EditText
+                    android:id="@+id/edit_tcpClientIp4"
+                    android:layout_width="110px"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:inputType="number"
+                    android:text="1" />
+            </LinearLayout>
+
+
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,6 +89,7 @@
             <EditText
                 android:id="@+id/edit_tcpClientPort"
                 android:layout_width="0dp"
+                android:inputType="number"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="1234" />
