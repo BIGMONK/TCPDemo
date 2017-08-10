@@ -1,8 +1,9 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="5">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:weightSum="5">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,10 +18,11 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ip:" />
+                android:text="ip:"/>
 
             <LinearLayout
                 android:layout_width="0px"
@@ -30,69 +32,68 @@
 
                 <EditText
                     android:id="@+id/edit_tcpClientIp1"
-                    android:layout_width="110px"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:inputType="number"
-                    android:text="115" />
+                    android:text="192"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
-                    android:text="." />
+                    android:text="."/>
 
                 <EditText
                     android:id="@+id/edit_tcpClientIp2"
-                    android:layout_width="110px"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:inputType="number"
-                    android:text="29" />
+                    android:text="168"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
-                    android:text="." />
+                    android:text="."/>
 
                 <EditText
                     android:id="@+id/edit_tcpClientIp3"
-                    android:layout_width="110px"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:inputType="number"
-                    android:text="198" />
+                    android:text="31"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
-                    android:text="." />
+                    android:text="."/>
 
                 <EditText
                     android:id="@+id/edit_tcpClientIp4"
-                    android:layout_width="110px"
+                    android:layout_width="60dp"
                     android:layout_height="wrap_content"
                     android:gravity="bottom"
                     android:inputType="number"
-                    android:text="179" />
+                    android:text="78"/>
             </LinearLayout>
-
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="port" />
+                android:text="port"/>
 
             <EditText
                 android:id="@+id/edit_tcpClientPort"
                 android:layout_width="0dp"
-                android:inputType="number"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="9001" />
+                android:layout_weight="0.6"
+                android:inputType="number"
+                android:text="5000"/>
         </LinearLayout>
 
         <LinearLayout
@@ -104,19 +105,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ID(英文或数字):" />
+                android:text="ID(英文或数字):"/>
 
             <EditText
                 android:id="@+id/edit_tcpClientID"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
 
             <Button
                 android:id="@+id/btn_tcpClientRandomID"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="随机生成" />
+                android:text="随机生成"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -129,25 +130,25 @@
             android:id="@+id/btn_tcpClientConn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="连接" />
+            android:text="连接"/>
 
         <Button
             android:id="@+id/btn_tcpClientClose"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="断开" />
+            android:text="断开"/>
 
         <Button
             android:id="@+id/btn_tcpCleanClientRecv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除接收区" />
+            android:text="清除接收区"/>
 
         <Button
             android:id="@+id/btn_tcpCleanClientSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除发送区" />
+            android:text="清除发送区"/>
     </LinearLayout>
 
     <LinearLayout
@@ -167,27 +168,27 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:gravity="bottom"
-                android:text="接收区：" />
+                android:text="接收区："/>
 
             <TextView
                 android:id="@+id/txt_ClientRcv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="5"
-                android:background="@android:color/holo_blue_light" />
+                android:background="@android:color/holo_blue_light"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="发送区：" />
+                android:text="发送区："/>
 
             <TextView
                 android:id="@+id/txt_ClientSend"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="7"
-                android:background="@android:color/holo_purple" />
+                android:background="@android:color/holo_purple"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -200,13 +201,13 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="5"
-                    android:scrollbars="horizontal" />
+                    android:scrollbars="horizontal"/>
 
                 <Button
                     android:id="@+id/btn_tcpClientSend"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="发送" />
+                    android:text="发送"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -214,13 +215,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/btn_ScanDevices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="扫描局域网设备" />
+                android:text="扫描局域网设备"/>
 
             <ListView
                 android:id="@+id/listview_Devices"

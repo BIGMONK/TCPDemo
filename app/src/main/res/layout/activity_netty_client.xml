@@ -1,14 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="jason.tcpdemo.netty.NettyClientActivity">
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv"
+        android:id="@+id/received"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="hello"/>
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/received"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ip:"/>
+
+        <LinearLayout
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.2"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_tcpClientIp1"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="192"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:text="."/>
+
+            <EditText
+                android:id="@+id/edit_tcpClientIp2"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:inputType="number"
+                android:text="168"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:text="."/>
+
+            <EditText
+                android:id="@+id/edit_tcpClientIp3"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:inputType="number"
+                android:text="31"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:text="."/>
+
+            <EditText
+                android:id="@+id/edit_tcpClientIp4"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:inputType="number"
+                android:text="147"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="port"/>
+
+        <EditText
+            android:id="@+id/edit_tcpClientPort"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:inputType="number"
+            android:text="5000"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/address"
+        android:text="连接"/>
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/connect"
+        android:text="发送"/>
+
+    <TextView
+        android:id="@+id/sent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/send"
+        android:layout_toRightOf="@+id/send"/>
+
+</RelativeLayout>

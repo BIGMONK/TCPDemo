@@ -12,7 +12,6 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -124,6 +123,7 @@ public class ActivityFuncTcpClient extends Activity {
 
                 String portString = 0 + editClientPort.getText().toString();
                 int portInt = Integer.parseInt(portString);
+
 
                 if (TextUtils.isEmpty(portString)||portInt>65535||portInt<1024) {
                     portString = "" + 1234;
