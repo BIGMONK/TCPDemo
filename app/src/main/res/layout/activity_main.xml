@@ -1,37 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="left"
-    android:layout_marginTop="30dp"
-    android:text="请选择对应功能:"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginTop="30dp"
+        android:text="请选择对应功能:" />
+
     <RadioGroup
         android:id="@+id/radiogroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp">
+
         <RadioButton
+            android:id="@+id/radio_Server"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="服务器(Server)"
             android:checked="true"
-            android:id="@+id/radio_Server"/>
+            android:text="服务器(Server)" />
+
         <RadioButton
+            android:id="@+id/radio_Client"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="客户端(Client)"
-            android:id="@+id/radio_Client"/>
+            android:text="客户端(Client)" />
+
+        <RadioButton
+            android:id="@+id/radio_Client_mina"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="客户端(ClientMina)" />
+    <RadioButton
+            android:id="@+id/radio_Client_netty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="客户端(ClientNetty)" />
     </RadioGroup>
+
     <TextView
+        android:id="@+id/txt_ShowFunction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="你选则的功能是：服务器"
         android:layout_marginTop="20dp"
-        android:id="@+id/txt_ShowFunction"/>
+        android:text="你选则的功能是：服务器" />
 
     <Button
         android:id="@+id/btn_FunctionEnsure"
