@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.mina.core.session.IoSession;
+
 import java.text.SimpleDateFormat;
 
 import butterknife.BindView;
@@ -58,7 +60,7 @@ public class ActivityClientMina extends Activity
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                received.setText("接收数据：（时间"+sdf.format(System.currentTimeMillis())+ "）："+message.toString());
+                received.setText("接收数据：（时间" + sdf.format(System.currentTimeMillis()) + "）：" + message.toString());
             }
         });
     }
@@ -69,7 +71,7 @@ public class ActivityClientMina extends Activity
         sent.post(new Runnable() {
             @Override
             public void run() {
-                sent.setText("发送数据：（时间"+sdf.format(System.currentTimeMillis())+ "）："+message.toString());
+                sent.setText("发送数据：（时间" + sdf.format(System.currentTimeMillis()) + "）：" + message.toString());
             }
         });
     }
@@ -77,25 +79,28 @@ public class ActivityClientMina extends Activity
     @Override
     public void onSessionClosed() {
         Log.e(TAG, "onSessionClosed ");
-        //        netSocket.Connect("192.168.0.103", 5000);
+    }
 
+    @Override
+    public void onSessionCreated(IoSession session) {
+        Log.e(TAG, "onSessionCreated: " + session.toString());
+    }
+
+    @Override
+    public void onSessionOpened(IoSession arg0) {
+        Log.e(TAG, "onSessionOpened: " + arg0.toString());
     }
 
     @Override
     public void onGetSession(int flag) {
         Log.e(TAG, "onGetSession: " + flag);
-/*
-public static final int NET_ERR = 999;
-    public static final int SERVER_ERR = 400;
-    public static final int CONNECT_SUCCESS = 200;
-    public static final int RECONNECT_Failed = 404;
- */
     }
+
     long t;
     @OnClick(R.id.send)
     public void send() {
         if (netSocket != null) {
-            t= System.currentTimeMillis();
+            t = System.currentTimeMillis();
             netSocket.sendMessageSocket(t + "");
         }
     }
@@ -138,15 +143,17 @@ public static final int NET_ERR = 999;
 
 
         connect.setClickable(false);
+        sending = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 netSocket = new NetSocket();
                 netSocket.setOnGetSessionListener(ActivityClientMina.this);
-                                netSocket.Connect("115.29.198.179", 9001);
+
+                netSocket.Connect("115.29.198.179", 9001);
 //                netSocket.Connect(ip, portInt);
                 netSocket.getSocketService().setMessageReceivedListener(ActivityClientMina.this);
-                while (!sending) {
+                while (sending) {
                     String clientSendMsg = " {\"sub\":\"101\",\"cmd\":\"2000\"}";
                     netSocket.sendMessageSocket(clientSendMsg);
                     try {
@@ -161,7 +168,7 @@ public static final int NET_ERR = 999;
 
     @Override
     protected void onDestroy() {
-        sending = true;
+        sending = false;
         netSocket.mMSession.close(true);
         super.onDestroy();
     }

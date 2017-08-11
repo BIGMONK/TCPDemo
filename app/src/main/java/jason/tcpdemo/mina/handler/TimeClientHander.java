@@ -59,18 +59,21 @@ public class TimeClientHander implements IoHandler {
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         // TODO Auto-generated method stub
+        if (session != null)
+            Log.d(TAG, "client sessionClosed" + session.toString());
         if (mSocketService != null) {
             mSocketService.processSessionClosed();
         }
-        if (session != null)
-            Log.d(TAG, "client sessionClosed" + session.toString());
     }
 
     @Override
-    public void sessionCreated(IoSession session) throws Exception {
+    public void sessionCreated(IoSession session)  {
         // TODO Auto-generated method stub
         if (session != null) {
             Log.d(TAG, "client sessionCreated:" + session.toString() + "建立连接");
+        }
+        if (mSocketService != null) {
+            mSocketService.processSessionCreated(session);
         }
     }
 
@@ -84,9 +87,12 @@ public class TimeClientHander implements IoHandler {
     }
 
     @Override
-    public void sessionOpened(IoSession arg0) throws Exception {
+    public void sessionOpened(IoSession arg0)  {
         // TODO Auto-generated method stub
-        Log.d(TAG, "打开连接"+arg0.toString());
+        Log.d(TAG, "打开连接sessionOpened:"+arg0.toString());
+        if (mSocketService != null) {
+            mSocketService.processSessionOpened(arg0);
+        }
     }
 
 }

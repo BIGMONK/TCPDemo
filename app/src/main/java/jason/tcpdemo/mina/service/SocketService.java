@@ -1,7 +1,13 @@
 package jason.tcpdemo.mina.service;
 
 
+import android.util.Log;
+
 import com.google.gson.Gson;
+
+import org.apache.mina.core.session.IoSession;
+
+
 
 /**
  * Description:
@@ -10,13 +16,17 @@ import com.google.gson.Gson;
  * Email：giousa@chinayoutu.com
  */
 public class SocketService {
-
+    private static final String TAG = "SocketService";
     public interface MessageReceivedListener {
         void onMessageReceived(Object message);
 
         void onMessageSent(Object message);
 
         void onSessionClosed();
+
+        void onSessionCreated(IoSession session);
+
+        void onSessionOpened(IoSession arg0);
     }
 
     private MessageReceivedListener mMessageReceivedListener;
@@ -40,6 +50,20 @@ public class SocketService {
     public void processSessionClosed() {
         if (mMessageReceivedListener != null) {
             mMessageReceivedListener.onSessionClosed();
+        }
+    }
+
+    public void processSessionCreated(IoSession session) {
+        if (mMessageReceivedListener != null) {
+            mMessageReceivedListener.onSessionCreated(session);
+        }
+    }
+
+    public void processSessionOpened(IoSession arg0) {
+        if (mMessageReceivedListener != null) {
+            Log.d(TAG, "打开连接processSessionOpened:"+arg0.toString());
+
+            mMessageReceivedListener.onSessionOpened(arg0);
         }
     }
 }
