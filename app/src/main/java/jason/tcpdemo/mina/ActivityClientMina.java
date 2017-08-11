@@ -152,6 +152,7 @@ public static final int NET_ERR = 999;
     @Override
     protected void onDestroy() {
         sending = true;
+        netSocket.mMSession.close(true);
         super.onDestroy();
     }
 }

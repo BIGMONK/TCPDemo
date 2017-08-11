@@ -2,11 +2,14 @@ package jason.tcpdemo.netty;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,27 +54,37 @@ public class ActivityNettyClient extends Activity
         //        int port=9001;
 
 
-
     }
 
+    long time;
+    SimpleDateFormat sdf=new SimpleDateFormat("yyyy.mm.dd hh:MM:ss.SSS");
     @Override
-    public void onChannelChangeListener(Object resistance) {
+    public void onChannelChangeListener(final Object resistance) {
         Log.e(TAG, "onChannelChangeListener: " + resistance.toString());
-        received.setText(resistance.toString());
+        synchronized (received.getClass()) {
+            received.post(new Runnable() {
+                @Override
+                public void run() {
+                     time= System.currentTimeMillis();
+                    received.setText("接收时间（"+sdf.format(time)+"):"+resistance.toString());
+                }
+            });
+        }
     }
 
     @OnClick(R.id.send)
-    public void send(){
-        if (client!=null){
+    public void send() {
+        if (client != null) {
             try {
-                long t= System.currentTimeMillis();
-                sent.setText(""+t);
-                client.sendData(""+t);
+                long t = System.currentTimeMillis();
+                sent.setText("" + t);
+                client.sendData("" + t);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+
     @OnClick(R.id.connect)
     public void onViewClicked() {
 
@@ -81,34 +94,33 @@ public class ActivityNettyClient extends Activity
         String ipString4 = 0 + editTcpClientIp4.getText().toString().trim();
 
         int ip1Int1 = Integer.parseInt(ipString1);
-        if (ip1Int1<=0){
+        if (ip1Int1 <= 0) {
             editTcpClientIp1.setText("0");
-        }else if (ip1Int1>255){
+        } else if (ip1Int1 > 255) {
             editTcpClientIp1.setText("255");
         }
         int ip1Int2 = Integer.parseInt(ipString2);
-        if (ip1Int2<=0){
+        if (ip1Int2 <= 0) {
             editTcpClientIp2.setText("0");
-        }else if (ip1Int2>255){
+        } else if (ip1Int2 > 255) {
             editTcpClientIp2.setText("255");
         }
         int ip1Int3 = Integer.parseInt(ipString3);
-        if (ip1Int3<=0){
+        if (ip1Int3 <= 0) {
             editTcpClientIp3.setText("0");
-        }else if (ip1Int3>255){
+        } else if (ip1Int3 > 255) {
             editTcpClientIp3.setText("255");
         }
         int ip1Int4 = Integer.parseInt(ipString4);
-        if (ip1Int4<=0){
+        if (ip1Int4 <= 0) {
             editTcpClientIp4.setText("0");
-        }else if (ip1Int4>255){
+        } else if (ip1Int4 > 255) {
             editTcpClientIp4.setText("255");
         }
         final String ip = ip1Int1 + "." + ip1Int2 + "." + ip1Int3 + "." + ip1Int4;
 
         String portString = 0 + editTcpClientPort.getText().toString();
         final int portInt = Integer.parseInt(portString);
-
 
 
         new Thread(new Runnable() {

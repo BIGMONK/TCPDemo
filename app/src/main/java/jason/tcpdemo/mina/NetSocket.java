@@ -14,6 +14,7 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
+import io.netty.handler.codec.string.StringDecoder;
 import jason.tcpdemo.mina.handler.TimeClientHander;
 import jason.tcpdemo.mina.service.SocketService;
 
@@ -38,7 +39,6 @@ public class NetSocket {
 
         mConnector.getFilterChain().addLast("codec",
                 new ProtocolCodecFilter(new PrefixedStringCodecFactory(Charset.forName("UTF-8"))));
-
         mSocketService = new SocketService();
         TimeClientHander timeClientHander = new TimeClientHander(mSocketService);
         mConnector.setHandler(timeClientHander);

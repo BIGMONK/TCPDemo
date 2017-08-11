@@ -14,6 +14,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import jason.tcpdemo.netty.code.MsgPackDecode;
 import jason.tcpdemo.netty.code.MsgPackEncode;
@@ -56,10 +58,15 @@ public class NettyClient {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
                         ClientHandler clientHandler = new ClientHandler(NettyClient.this);
+
                         p.addLast(new IdleStateHandler(0, 0, 5));
-                        p.addLast(new MsgPackDecode());
-                        p.addLast(new MsgPackEncode());
+//                        p.addLast(new MsgPackDecode());
+//                        p.addLast(new MsgPackEncode());
+
+                        p.addLast("decoder",new StringDecoder());
+                        p.addLast("encoder",new StringEncoder());
                         p.addLast(clientHandler);
+
                         clientHandler.setChannelValueChangeListener(new ClientHandler.ChannelValueChangeListener() {
                             @Override
                             public void onChannelValueChangeListener(Object res) {
@@ -72,7 +79,7 @@ public class NettyClient {
                 });
     }
     public void doConnect() {
-        Log.e(TAG, "doConnect: " );
+        Log.e(TAG, "doConnect: " +ip+":"+port);
         if (channel != null && channel.isActive()) {
             return;
         }
@@ -81,7 +88,8 @@ public class NettyClient {
             public void operationComplete(ChannelFuture futureListener) throws Exception {
                 if (futureListener.isSuccess()) {
                     channel = futureListener.channel();
-                    Log.e(TAG, "operationComplete: Connect to server successfully!");
+                    Log.e(TAG, "operationComplete: Connect to server successfully!"
+                            +channel.toString());
                 } else {
                     Log.e(TAG, "operationComplete: Failed to connect to server, try connect after 10s");
                     futureListener.channel().eventLoop().schedule(new Runnable() {

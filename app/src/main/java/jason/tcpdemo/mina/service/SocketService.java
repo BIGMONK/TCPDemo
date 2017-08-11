@@ -11,13 +11,7 @@ import com.google.gson.Gson;
  */
 public class SocketService {
 
-    private Gson gson;
-
-    public SocketService() {
-        gson = new Gson();
-    }
-
-    public interface MessageReceivedListener {
+     public interface MessageReceivedListener {
         void onMessageReceived(Object message);
 
         void onSessionClosed();

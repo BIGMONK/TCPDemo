@@ -31,7 +31,8 @@ public class TimeClientHander implements IoHandler {
     public void exceptionCaught(IoSession arg0, Throwable arg1)
             throws Exception {
         // TODO Auto-generated method stub
-        Log.d(TAG, "异常捕获exceptionCaught"+arg1.getMessage());
+        Log.d(TAG, "异常捕获exceptionCaught arg0"+arg0.toString());
+        Log.d(TAG, "异常捕获exceptionCaught arg1"+arg1.getMessage());
         arg1.printStackTrace();
     }
 
