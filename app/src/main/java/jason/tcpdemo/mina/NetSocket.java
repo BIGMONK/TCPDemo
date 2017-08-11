@@ -36,9 +36,8 @@ public class NetSocket {
     public NetSocket() {
         mConnector = new NioSocketConnector();
         mConnector.getFilterChain().addLast("logger", new LoggingFilter());
-
         mConnector.getFilterChain().addLast("codec",
-                new ProtocolCodecFilter(new PrefixedStringCodecFactory(Charset.forName("UTF-8"))));
+                new ProtocolCodecFilter(new PrefixedStringCodecFactory()));
         mSocketService = new SocketService();
         TimeClientHander timeClientHander = new TimeClientHander(mSocketService);
         mConnector.setHandler(timeClientHander);

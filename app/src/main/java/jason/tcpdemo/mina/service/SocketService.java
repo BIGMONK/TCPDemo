@@ -11,8 +11,10 @@ import com.google.gson.Gson;
  */
 public class SocketService {
 
-     public interface MessageReceivedListener {
+    public interface MessageReceivedListener {
         void onMessageReceived(Object message);
+
+        void onMessageSent(Object message);
 
         void onSessionClosed();
     }
@@ -26,6 +28,12 @@ public class SocketService {
     public void processMessageReceived(Object message) {
         if (mMessageReceivedListener != null) {
             mMessageReceivedListener.onMessageReceived(message);
+        }
+    }
+
+    public void processMessageSent(Object message) {
+        if (mMessageReceivedListener != null) {
+            mMessageReceivedListener.onMessageSent(message);
         }
     }
 

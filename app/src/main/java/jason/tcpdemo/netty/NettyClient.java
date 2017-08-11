@@ -35,7 +35,8 @@ public class NettyClient {
 
     private ChannelChangeListener mChannelChangeListener;
     public interface ChannelChangeListener{
-        void onChannelChangeListener(Object resistance);
+        void onChannelChangeListenerReceive(Object resistance);
+        void onChannelChangeListenerSend(Object resistance);
     }
 
     public void setChannelChangeListener(ChannelChangeListener channelChangeListener) {
@@ -45,6 +46,9 @@ public class NettyClient {
     public void sendData(String deviceValue) throws Exception {
         if (channel != null && channel.isActive()) {
             channel.writeAndFlush(deviceValue);
+            if(mChannelChangeListener != null){
+                mChannelChangeListener.onChannelChangeListenerSend(deviceValue);
+            }
         }
     }
     public NettyClient(String ip, int port) {
@@ -71,7 +75,7 @@ public class NettyClient {
                             @Override
                             public void onChannelValueChangeListener(Object res) {
                                 if(mChannelChangeListener != null){
-                                    mChannelChangeListener.onChannelChangeListener(res);
+                                    mChannelChangeListener.onChannelChangeListenerReceive(res);
                                 }
                             }
                         });

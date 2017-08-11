@@ -51,6 +51,9 @@ public class TimeClientHander implements IoHandler {
         if (arg0 != null) {
             Log.d(TAG, "client发送信息:" + arg0.toString()+ "   " + message.toString());
         }
+        if (mSocketService != null) {
+            mSocketService.processMessageSent(message);
+        }
     }
 
     @Override

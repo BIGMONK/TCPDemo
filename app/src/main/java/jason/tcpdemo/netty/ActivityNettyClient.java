@@ -2,7 +2,6 @@ package jason.tcpdemo.netty;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +39,8 @@ public class ActivityNettyClient extends Activity
     Button send;
     @BindView(R.id.sent)
     TextView sent;
+    @BindView(R.id.tv_sent)
+    TextView tvSent;
     private NettyClient client;
 
     @Override
@@ -57,20 +58,7 @@ public class ActivityNettyClient extends Activity
     }
 
     long time;
-    SimpleDateFormat sdf=new SimpleDateFormat("yyyy.mm.dd hh:MM:ss.SSS");
-    @Override
-    public void onChannelChangeListener(final Object resistance) {
-        Log.e(TAG, "onChannelChangeListener: " + resistance.toString());
-        synchronized (received.getClass()) {
-            received.post(new Runnable() {
-                @Override
-                public void run() {
-                     time= System.currentTimeMillis();
-                    received.setText("接收时间（"+sdf.format(time)+"):"+resistance.toString());
-                }
-            });
-        }
-    }
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy.mm.dd hh:MM:ss.SSS");
 
     @OnClick(R.id.send)
     public void send() {
@@ -131,5 +119,33 @@ public class ActivityNettyClient extends Activity
                 client.doConnect();
             }
         }).start();
+    }
+
+    @Override
+    public void onChannelChangeListenerReceive(final Object resistance) {
+        Log.e(TAG, "onChannelChangeListenerReceive: " + resistance.toString());
+        synchronized (received.getClass()) {
+            received.post(new Runnable() {
+                @Override
+                public void run() {
+                    time = System.currentTimeMillis();
+                    received.setText("接收时间（" + sdf.format(time) + "):" + resistance.toString());
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onChannelChangeListenerSend(final Object resistance) {
+        Log.e(TAG, "onChannelChangeListenerSend: " + resistance.toString());
+        synchronized (tvSent.getClass()) {
+            tvSent.post(new Runnable() {
+                @Override
+                public void run() {
+                    time = System.currentTimeMillis();
+                    tvSent.setText("发送时间（" + sdf.format(time) + "):" + resistance.toString());
+                }
+            });
+        }
     }
 }

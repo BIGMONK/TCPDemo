@@ -5,10 +5,16 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/tv_sent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="sent"/>
+    <TextView
+        android:layout_below="@+id/tv_sent"
         android:id="@+id/received"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="hello"/>
+        android:text="receive"/>
 
     <LinearLayout
         android:id="@+id/address"

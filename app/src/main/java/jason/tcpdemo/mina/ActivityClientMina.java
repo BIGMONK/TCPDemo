@@ -15,7 +15,8 @@ import butterknife.OnClick;
 import jason.tcpdemo.R;
 import jason.tcpdemo.mina.service.SocketService;
 
-public class ActivityClientMina extends Activity implements SocketService.MessageReceivedListener,
+public class ActivityClientMina extends Activity
+        implements SocketService.MessageReceivedListener,
         NetSocket.onGetSessionListener {
     private static final String TAG = "ActivityClientMina";
     @BindView(R.id.received)
@@ -57,7 +58,18 @@ public class ActivityClientMina extends Activity implements SocketService.Messag
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                received.setText(message.toString() + "  " + sdf.format(System.currentTimeMillis()));
+                received.setText("接收数据：（时间"+sdf.format(System.currentTimeMillis())+ "）："+message.toString());
+            }
+        });
+    }
+
+    @Override
+    public void onMessageSent(final Object message) {
+        Log.e(TAG, "onMessageSent: " + message.toString());
+        sent.post(new Runnable() {
+            @Override
+            public void run() {
+                sent.setText("发送数据：（时间"+sdf.format(System.currentTimeMillis())+ "）："+message.toString());
             }
         });
     }
@@ -79,13 +91,11 @@ public static final int NET_ERR = 999;
     public static final int RECONNECT_Failed = 404;
  */
     }
-
+    long t;
     @OnClick(R.id.send)
     public void send() {
         if (netSocket != null) {
-            long t= System.currentTimeMillis();
-            sent.setText(""+t);
-
+            t= System.currentTimeMillis();
             netSocket.sendMessageSocket(t + "");
         }
     }
@@ -133,8 +143,8 @@ public static final int NET_ERR = 999;
             public void run() {
                 netSocket = new NetSocket();
                 netSocket.setOnGetSessionListener(ActivityClientMina.this);
-                //                netSocket.Connect("115.29.198.179", 9001);
-                netSocket.Connect(ip, portInt);
+                                netSocket.Connect("115.29.198.179", 9001);
+//                netSocket.Connect(ip, portInt);
                 netSocket.getSocketService().setMessageReceivedListener(ActivityClientMina.this);
                 while (!sending) {
                     String clientSendMsg = " {\"sub\":\"101\",\"cmd\":\"2000\"}";
