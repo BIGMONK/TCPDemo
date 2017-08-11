@@ -26,7 +26,7 @@
             android:label="TCPServer" />
         <activity android:name=".mina.ActivityClientMina"
                   android:label="TCPMinaClient" />
-        <activity android:name=".netty.NettyClientActivity"
+        <activity android:name=".netty.ActivityNettyClient"
                   android:label="TCPNettyClient" ></activity>
     </application>
 

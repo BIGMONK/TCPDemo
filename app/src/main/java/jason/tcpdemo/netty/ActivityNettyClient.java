@@ -13,9 +13,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jason.tcpdemo.R;
 
-public class NettyClientActivity extends Activity
+public class ActivityNettyClient extends Activity
         implements NettyClient.ChannelChangeListener {
-    private static final String TAG = "NettyClientActivity";
+    private static final String TAG = "ActivityNettyClient";
 
     @BindView(R.id.received)
     TextView received;
@@ -115,7 +115,7 @@ public class NettyClientActivity extends Activity
             @Override
             public void run() {
                 client = new NettyClient(ip, portInt);
-                client.setChannelChangeListener(NettyClientActivity.this);
+                client.setChannelChangeListener(ActivityNettyClient.this);
                 client.doConnect();
             }
         }).start();
