@@ -105,8 +105,7 @@ public class NettyClientActivity extends Activity
         String portString = 0 + editTcpClientPort.getText().toString();
         final int portInt = Integer.parseInt(portString);
 
-        connect.setText("连接中……");
-        connect.setClickable(false);
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -153,6 +152,10 @@ public class NettyClientActivity extends Activity
         }
     }
 
+    /**
+     * 连接成功
+     * @param ch
+     */
     @Override
     public void onConnectActivity(ChannelHandlerContext ch) {
         Log.d(TAG, "$$$$$连接成功:"
@@ -160,15 +163,26 @@ public class NettyClientActivity extends Activity
                 + ch.channel().toString()
                 +"  线程信息："+ getThreadInfo(Thread.currentThread())
         );
+
+        connect.setText("连接成功");
+
     }
 
+    /**
+     * 连接断开
+     * @param ch
+     */
     @Override
     public void onConnectInactivity(ChannelHandlerContext ch) {
+
         Log.d(TAG, "$$$$$连接断开:"
                 + ch.name()+"  "
                 + ch.channel().toString()
                 +"  线程信息："+ getThreadInfo(Thread.currentThread())
         );
+
+        connect.setText("连接已断开，点击重连");
+        connect.setClickable(true);
     }
 
     /**
@@ -183,6 +197,9 @@ public class NettyClientActivity extends Activity
                 + "  次数：" + times
                 +"  线程信息："+ getThreadInfo(Thread.currentThread())
         );
+
+        connect.setText("连接失败"+times+",即将重连");
+
     }
     /**
      * 停止连接重试
@@ -191,19 +208,32 @@ public class NettyClientActivity extends Activity
      */
     @Override
     public void onreConnectStop(ChannelFuture future) {
+
         Log.d(TAG, "$$$$$onreConnectStop: 停止连接"
                 + "  " + future.channel().toString()
                 +"  线程信息："+ getThreadInfo(Thread.currentThread())
 
         );
+
+        connect.setText("失败次数过多，点击重试");
+        connect.setClickable(true);
     }
 
     @Override
     public void onStartConnecting(String ip, int port) {
+
         Log.d(TAG, "$$$$$onStartConnecting: 开始连接"
                 + "  ip:" + ip+"  port:"+port
                 +"  线程信息："+ getThreadInfo(Thread.currentThread())
         );
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connect.setText("连接中……");
+                connect.setClickable(false);
+            }
+        });
     }
 
 
