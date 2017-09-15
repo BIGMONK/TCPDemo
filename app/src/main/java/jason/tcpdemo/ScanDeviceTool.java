@@ -48,7 +48,7 @@ public class ScanDeviceTool {
         Log.d(TAG, "开始扫描设备,本机Ip为：" + mDevAddress);
 
         if (TextUtils.isEmpty(mLocAddress)) {
-            Log.e(TAG, "扫描失败，请检查wifi网络");
+            Log.d(TAG, "扫描失败，请检查wifi网络");
             return null;
         }
         mExecutor = Executors.newFixedThreadPool(10);
@@ -77,7 +77,7 @@ public class ScanDeviceTool {
                             Log.d(TAG, "扫描失败");
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "扫描异常" + e.toString());
+                        Log.d(TAG, "扫描异常" + e.toString());
                     } finally {
                         if (mProcess != null)
                             mProcess.destroy();
@@ -147,7 +147,7 @@ public class ScanDeviceTool {
                 }
             }
         } catch (SocketException e) {
-            Log.e("", "获取本地ip地址失败");
+            Log.d("", "获取本地ip地址失败");
             e.printStackTrace();
         }
 

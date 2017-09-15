@@ -55,7 +55,7 @@ public class TcpServerRunnable implements Runnable {
                 serverSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "TcpServerRunnable closeSelf  IOException "
+                Log.d(TAG, "TcpServerRunnable closeSelf  IOException "
                         + this.toString()
                         + "  serverSocket=" + serverSocket.toString()
                         + "  " + e.toString());
@@ -69,7 +69,7 @@ public class TcpServerRunnable implements Runnable {
             return serverSocket.accept();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run getSocket IOException  " + this.toString()
+            Log.d(TAG, "TcpServerRunnable run getSocket IOException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
                     + "  " + e.toString());
             return null;
@@ -93,13 +93,13 @@ public class TcpServerRunnable implements Runnable {
             serverSocket.close();
         } catch (SocketException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run  SocketTimeoutException  " + this.toString()
+            Log.d(TAG, "TcpServerRunnable run  SocketTimeoutException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
                     + "  " + e.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e(TAG, "TcpServerRunnable run  IOException  " + this.toString()
+            Log.d(TAG, "TcpServerRunnable run  IOException  " + this.toString()
                     + "  serverSocket=" + serverSocket.toString()
                     + "  " + e.toString());
 
@@ -135,7 +135,7 @@ public class TcpServerRunnable implements Runnable {
                 start();
             } catch (SocketException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread  SocketException "
+                Log.d(TAG, "ServerSocketThread  SocketException "
                         + this.toString()
                         + "  socket=" + socket.toString()
                         + "  " + e.toString()
@@ -143,7 +143,7 @@ public class TcpServerRunnable implements Runnable {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread  IOException "
+                Log.d(TAG, "ServerSocketThread  IOException "
                         + this.toString()
                         + "  socket=" + socket.toString()
                         + "  " + e.toString());
@@ -191,7 +191,7 @@ public class TcpServerRunnable implements Runnable {
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run SocketException  "
+                    Log.d(TAG, "ServerSocketThread run SocketException  "
                             + this.toString()
                             + "  socket=" + socket.toString()
                             + "  " + e.toString()
@@ -199,7 +199,7 @@ public class TcpServerRunnable implements Runnable {
                     String cause = e.getCause().toString();
                     if (cause.contains("recvfrom failed: ECONNRESET (Connection reset by peer)")) {
                         isRun = false;//客户端主动断开 会抛异常
-                        Log.e(TAG, "ServerSocketThread run SocketException  "
+                        Log.d(TAG, "ServerSocketThread run SocketException  "
                                 + this.toString()
                                 + "  客户端断开连接"
                         );
@@ -211,12 +211,12 @@ public class TcpServerRunnable implements Runnable {
                     }
                 } catch (SocketTimeoutException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "
+                    Log.d(TAG, "ServerSocketThread run SocketTimeoutException  "
                             + this.toString()
                             + "  socket=" + socket.toString()
                             + "  " + e.toString());
 //                    if (!socket.isConnected()) {
-//                        Log.e(TAG, "ServerSocketThread run SocketTimeoutException  "
+//                        Log.d(TAG, "ServerSocketThread run SocketTimeoutException  "
 //                                + this.toString()
 //                                + "   isRun = false"
 //                                + "  " + e.toString());
@@ -224,13 +224,13 @@ public class TcpServerRunnable implements Runnable {
 //                    }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run UnsupportedEncodingException "
+                    Log.d(TAG, "ServerSocketThread run UnsupportedEncodingException "
                             + this.toString()
                             + "  socket=" + socket.toString()
                             + "  " + e.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e(TAG, "ServerSocketThread run IOException "
+                    Log.d(TAG, "ServerSocketThread run IOException "
                             + this.toString()
                             + "  socket=" + socket.toString()
                             + "  " + e.toString());
@@ -245,7 +245,7 @@ public class TcpServerRunnable implements Runnable {
                         + "  socket=" + socket.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "ServerSocketThread run IOException "
+                Log.d(TAG, "ServerSocketThread run IOException "
                         + this.toString()
                         + "  socket=" + socket.toString()
                         + "  " + e.toString());

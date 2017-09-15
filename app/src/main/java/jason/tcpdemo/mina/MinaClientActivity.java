@@ -17,10 +17,10 @@ import butterknife.OnClick;
 import jason.tcpdemo.R;
 import jason.tcpdemo.mina.service.SocketService;
 
-public class ActivityClientMina extends Activity
+public class MinaClientActivity extends Activity
         implements SocketService.MessageReceivedListener,
         NetSocket.onGetSessionListener {
-    private static final String TAG = "ActivityClientMina";
+    private static final String TAG = "MinaClientActivity";
     @BindView(R.id.received)
     TextView received;
     @BindView(R.id.connect)
@@ -41,14 +41,13 @@ public class ActivityClientMina extends Activity
     @BindView(R.id.sent)
     TextView sent;
     private boolean sending;
+    private String ip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_mina);
         ButterKnife.bind(this);
-
-
     }
 
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -56,7 +55,7 @@ public class ActivityClientMina extends Activity
 
     @Override
     public void onMessageReceived(final Object message) {
-        Log.e(TAG, "onMessageReceived: " + message.toString());
+        Log.d(TAG, "onMessageReceived: " + message.toString());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -67,7 +66,8 @@ public class ActivityClientMina extends Activity
 
     @Override
     public void onMessageSent(final Object message) {
-        Log.e(TAG, "onMessageSent: " + message.toString());
+        Log.d(TAG, "onMessageSent: " + message.toString());
+
         sent.post(new Runnable() {
             @Override
             public void run() {
@@ -78,22 +78,22 @@ public class ActivityClientMina extends Activity
 
     @Override
     public void onSessionClosed() {
-        Log.e(TAG, "onSessionClosed ");
+        Log.d(TAG, "onSessionClosed ");
     }
 
     @Override
     public void onSessionCreated(IoSession session) {
-        Log.e(TAG, "onSessionCreated: " + session.toString());
+        Log.d(TAG, "onSessionCreated: " + session.toString());
     }
 
     @Override
     public void onSessionOpened(IoSession arg0) {
-        Log.e(TAG, "onSessionOpened: " + arg0.toString());
+        Log.d(TAG, "onSessionOpened: " + arg0.toString());
     }
 
     @Override
     public void onGetSession(int flag) {
-        Log.e(TAG, "onGetSession: " + flag);
+        Log.d(TAG, "onGetSession: " + flag);
     }
 
     long t;
@@ -148,20 +148,22 @@ public class ActivityClientMina extends Activity
             @Override
             public void run() {
                 netSocket = new NetSocket();
-                netSocket.setOnGetSessionListener(ActivityClientMina.this);
+                netSocket.setOnGetSessionListener(MinaClientActivity.this);
 
-                netSocket.Connect("115.29.198.179", 9001);
-//                netSocket.Connect(ip, portInt);
-                netSocket.getSocketService().setMessageReceivedListener(ActivityClientMina.this);
-                while (sending) {
-                    String clientSendMsg = " {\"sub\":\"101\",\"cmd\":\"2000\"}";
-                    netSocket.sendMessageSocket(clientSendMsg);
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                netSocket.Connect("115.29.198.179", 9001);
+                netSocket.Connect(ip, portInt);
+                netSocket.getSocketService().setMessageReceivedListener(MinaClientActivity.this);
+//
+//                while (sending) {
+//                    String clientSendMsg = " {\"sub\":\"101\",\"cmd\":\"2000\"}";
+//                    netSocket.sendMessageSocket(clientSendMsg);
+//                    try {
+//                        Thread.sleep(5000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+
             }
         }).start();
     }

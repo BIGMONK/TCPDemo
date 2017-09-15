@@ -20,8 +20,8 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import jason.tcpdemo.funcs.ActivityFuncTcpClient;
 import jason.tcpdemo.funcs.ActivityFuncTcpServer;
-import jason.tcpdemo.mina.ActivityClientMina;
-import jason.tcpdemo.netty.ActivityNettyClient;
+import jason.tcpdemo.mina.MinaClientActivity;
+import jason.tcpdemo.netty.NettyClientActivity;
 
 import static android.content.ContentValues.TAG;
 
@@ -55,9 +55,9 @@ public class MainActivity extends Activity {
                 } else if (radioBtnClient.isChecked()) {
                     startActivity(new Intent(MainActivity.this, ActivityFuncTcpClient.class));
                 } else if (radioBtnClientMina.isChecked()) {
-                    startActivity(new Intent(MainActivity.this, ActivityClientMina.class));
+                    startActivity(new Intent(MainActivity.this, MinaClientActivity.class));
                 } else if (radioBtnClientNetty.isChecked()) {
-                    startActivity(new Intent(MainActivity.this, ActivityNettyClient.class));
+                    startActivity(new Intent(MainActivity.this, NettyClientActivity.class));
                 }
                 break;
         }
@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
                     byte[] des = new byte[c];
                     System.arraycopy(src, 0, des, 0, c);
                     final String sss = "Ping"+ip+"返回值为：\n" + result + " \n返回内容：\n" + new String(des);
-                    Log.e(TAG, sss);
+                    Log.d(TAG, sss);
                     tvPingReceive.post(new Runnable() {
                         @Override
                         public void run() {

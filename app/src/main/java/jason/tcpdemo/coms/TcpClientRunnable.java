@@ -74,7 +74,7 @@ public class TcpClientRunnable implements Runnable {
             pw.println(msg);
             pw.flush();
         } else {
-            Log.e(TAG, "send: socket 未连接");
+            Log.d(TAG, "send: socket 未连接");
         }
     }
 
@@ -108,14 +108,14 @@ public class TcpClientRunnable implements Runnable {
                 intent.putExtra("tcpClientReceiver", "连接服务器成功:" + serverIP + ":"
                         + serverPort + "…" + new Date().toString());
                 ActivityFuncTcpClient.context.sendBroadcast(intent);//将消息发送给主界面
-                Log.e(TAG, "run: 连接服务器成功" + socket.toString()
+                Log.d(TAG, "run: 连接服务器成功" + socket.toString()
                         + "  " + socket.getRemoteSocketAddress().toString());
                 pw = new PrintWriter(socket.getOutputStream(), true);
                 is = socket.getInputStream();
                 dis = new DataInputStream(is);
             } catch (ConnectException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: 连接服务器失败:" + serverIP + ":"
+                Log.d(TAG, "run: 连接服务器失败:" + serverIP + ":"
                         + serverPort + "…" + this.toString()
                         + "  " + e.toString());
                 if (intent == null) {
@@ -174,25 +174,25 @@ public class TcpClientRunnable implements Runnable {
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: " + this.toString()
+                Log.d(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  UnsupportedEncodingException=" + e.toString()
                 );
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: " + this.toString()
+                Log.d(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  InterruptedException=" + e.toString());
             } catch (SocketTimeoutException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: " + this.toString()
+                Log.d(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  SocketTimeoutException=" + e.toString()
                         + "  e.getCause()=" + e.getCause()
                         + "  e.getMessage()=" + e.getMessage());
             } catch (SocketException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: " + this.toString()
+                Log.d(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  SocketException=" + e.toString()
                         + "  e.getCause()=" + e.getCause()
@@ -211,7 +211,7 @@ public class TcpClientRunnable implements Runnable {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "run: " + this.toString()
+                Log.d(TAG, "run: " + this.toString()
                         + "  dis=" + dis.toString()
                         + "  IOException=" + e.toString());
             }

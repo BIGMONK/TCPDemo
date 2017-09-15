@@ -3,6 +3,8 @@ package jason.tcpdemo.mina;
 
 import android.util.Log;
 
+import org.apache.mina.core.filterchain.IoFilterChain;
+import org.apache.mina.core.filterchain.IoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoConnector;
 import org.apache.mina.core.session.IoSession;

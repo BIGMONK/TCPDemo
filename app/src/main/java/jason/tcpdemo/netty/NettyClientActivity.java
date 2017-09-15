@@ -13,11 +13,13 @@ import java.text.SimpleDateFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import jason.tcpdemo.R;
 
-public class ActivityNettyClient extends Activity
-        implements NettyClient.ChannelChangeListener {
-    private static final String TAG = "ActivityNettyClient";
+public class NettyClientActivity extends Activity
+        implements NettyTCPClient.ChannelChangeListener {
+    private static final String TAG = "NettyClientActivity";
 
     @BindView(R.id.received)
     TextView received;
@@ -41,20 +43,13 @@ public class ActivityNettyClient extends Activity
     TextView sent;
     @BindView(R.id.tv_sent)
     TextView tvSent;
-    private NettyClient client;
+    private NettyTCPClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_netty_client);
         ButterKnife.bind(this);
-
-//        final String ip = "192.168.0.103";
-//        final int port = 5000;
-        //         String ip="115.29.198.179";
-        //        int port=9001;
-
-
     }
 
     long time;
@@ -110,26 +105,31 @@ public class ActivityNettyClient extends Activity
         String portString = 0 + editTcpClientPort.getText().toString();
         final int portInt = Integer.parseInt(portString);
 
-
+        connect.setText("连接中……");
+        connect.setClickable(false);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                client = new NettyClient(ip, portInt);
-                client.setChannelChangeListener(ActivityNettyClient.this);
+                client = new NettyTCPClient(ip, portInt);
+                client.setChannelChangeListener(NettyClientActivity.this);
                 client.doConnect();
             }
         }).start();
     }
 
+
     @Override
-    public void onChannelChangeListenerReceive(final Object resistance) {
-        Log.e(TAG, "onChannelChangeListenerReceive: " + resistance.toString());
+    public void onChannelChangeListenerReceive(ChannelHandlerContext ctx, final Object msg) {
+        Log.d(TAG, "$$$$$onChannelChangeListenerReceive接收数据: "
+                + msg.toString() + "  长度：" + msg.toString().length()
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
         synchronized (received.getClass()) {
             received.post(new Runnable() {
                 @Override
                 public void run() {
                     time = System.currentTimeMillis();
-                    received.setText("接收时间（" + sdf.format(time) + "):" + resistance.toString());
+                    received.setText("接收时间（" + sdf.format(time) + "):" + msg.toString());
                 }
             });
         }
@@ -137,7 +137,11 @@ public class ActivityNettyClient extends Activity
 
     @Override
     public void onChannelChangeListenerSend(final Object resistance) {
-        Log.e(TAG, "onChannelChangeListenerSend: " + resistance.toString());
+        Log.d(TAG, "$$$$$onChannelChangeListenerSend发送数据: "
+                + resistance.toString()
+                + "  长度：" + resistance.toString().length()
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
         synchronized (tvSent.getClass()) {
             tvSent.post(new Runnable() {
                 @Override
@@ -148,4 +152,70 @@ public class ActivityNettyClient extends Activity
             });
         }
     }
+
+    @Override
+    public void onConnectActivity(ChannelHandlerContext ch) {
+        Log.d(TAG, "$$$$$连接成功:"
+                + ch.name()+"  "
+                + ch.channel().toString()
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
+    }
+
+    @Override
+    public void onConnectInactivity(ChannelHandlerContext ch) {
+        Log.d(TAG, "$$$$$连接断开:"
+                + ch.name()+"  "
+                + ch.channel().toString()
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
+    }
+
+    /**
+     * 连接失败回调
+     * @param future
+     * @param times
+     */
+    @Override
+    public void onConnectFailed(ChannelFuture future,Object times) {
+        Log.d(TAG, "$$$$$onConnectFailed: 连接失败："
+               + future.channel().toString()
+                + "  次数：" + times
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
+    }
+    /**
+     * 停止连接重试
+     *
+     * @param future
+     */
+    @Override
+    public void onreConnectStop(ChannelFuture future) {
+        Log.d(TAG, "$$$$$onreConnectStop: 停止连接"
+                + "  " + future.channel().toString()
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+
+        );
+    }
+
+    @Override
+    public void onStartConnecting(String ip, int port) {
+        Log.d(TAG, "$$$$$onStartConnecting: 开始连接"
+                + "  ip:" + ip+"  port:"+port
+                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+        );
+    }
+
+
+    private String getThreadInfo(Thread thread) {
+        if (thread != null) {
+            return "Name:" + thread.getName()
+                    + "    ThreadGroup:" + thread.getThreadGroup().getName()
+                    + "    Priority:" + thread.getPriority()
+                    + "    Id:" + thread.getId()
+                    + "    State:" + thread.getState();
+        }
+        return null;
+    }
+
 }

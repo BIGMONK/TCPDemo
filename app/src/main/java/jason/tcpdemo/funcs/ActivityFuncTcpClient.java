@@ -183,7 +183,7 @@ public class ActivityFuncTcpClient extends Activity {
         public void handleMessage(Message msg) {
             if (mActivity != null) {
                 switch (msg.what) {
-                    case 1:
+                    case 1://接收区
                         if (txtRcv.getLineCount() > 20) {
                             txtRcv.setText("");
                             txtRcv.scrollTo(0, 0);
@@ -196,7 +196,7 @@ public class ActivityFuncTcpClient extends Activity {
                             txtRcv.scrollBy(0, txtRcv.getLineHeight());
                         }
                         break;
-                    case 2:
+                    case 2://发送区
                         if (txtSend.getLineCount() > 20) {
                             txtSend.setText("");
                             txtSend.scrollTo(0, 0);

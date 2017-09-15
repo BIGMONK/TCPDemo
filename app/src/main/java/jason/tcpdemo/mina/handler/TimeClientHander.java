@@ -39,7 +39,10 @@ public class TimeClientHander implements IoHandler {
     @Override
     public void messageReceived(IoSession arg0, Object message) throws Exception {
         // TODO Auto-generated method stub
-        Log.d(TAG, "client接受信息:" + mSocketService.toString() + message.toString());
+        Log.d(TAG, "client接受信息:" + mSocketService.toString()
+                + "数据内容："+message.toString()
+                + "数据内容字节长度："+message.toString().getBytes().length
+        );
         if (mSocketService != null) {
             mSocketService.processMessageReceived(message);
         }
