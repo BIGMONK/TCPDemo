@@ -136,7 +136,7 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
         Log.d(TAG, "handleReaderIdle:ALL_IDLE: " + ctx.channel().remoteAddress());
         try {
             if (this.client != null) {
-                this.client.sendData(110 + "");//超时心跳数据
+                this.client.sendData(110 + "心跳");//超时心跳数据
             }
         } catch (Exception e) {
             e.printStackTrace();

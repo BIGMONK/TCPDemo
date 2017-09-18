@@ -102,7 +102,7 @@
 
     <Button
         android:id="@+id/connect"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/address"
         android:text="连接"/>
@@ -120,5 +120,11 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/send"
         android:layout_toRightOf="@+id/send"/>
+
+    <TextView
+        android:id="@+id/tv_jump"
+        android:text="跳转"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

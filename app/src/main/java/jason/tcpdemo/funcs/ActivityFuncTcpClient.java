@@ -70,7 +70,7 @@ public class ActivityFuncTcpClient extends Activity {
     private static TcpClientRunnable tcpClient = null;
     private final MyHandler myHandler = new MyHandler(this);
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
-    ExecutorService exec = Executors.newCachedThreadPool();
+    ExecutorService exec = Executors.newCachedThreadPool();//无界线程池，可以进行自动线程回收
     private String clientSendMsg;
 
     @OnClick({R.id.edit_tcpClientIp1, R.id.edit_tcpClientPort, R.id.edit_tcpClientID,

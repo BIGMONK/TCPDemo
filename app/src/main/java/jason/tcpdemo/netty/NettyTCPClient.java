@@ -4,6 +4,10 @@ package jason.tcpdemo.netty;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
@@ -19,6 +23,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import jason.tcpdemo.Utils;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
@@ -33,80 +38,82 @@ public class NettyTCPClient {
     private Bootstrap bootstrap;
     private String ip;
     private int port;
+    ExecutorService exec = Executors.newCachedThreadPool();//无界线程池，可以进行自动线程回收
 
 
     private ChannelChangeListener mChannelChangeListener;
+    private int reconnectTimes;
+    private int reconnectDelay;
 
-    public interface ChannelChangeListener {
-        /**
-         * j接收数据
-         *
-         * @param ctx
-         * @param msg
-         */
-        void onChannelChangeListenerReceive(ChannelHandlerContext ctx, Object msg);
 
-        /**
-         * 发送数据
-         *
-         * @param resistance
-         */
-        void onChannelChangeListenerSend(Object resistance);
 
-        /**
-         * 连接成功
-         *
-         * @param ch
-         */
-        void onConnectActivity(ChannelHandlerContext ch);
 
-        /**
-         * 断开连接
-         *
-         * @param ch
-         */
-        void onConnectInactivity(ChannelHandlerContext ch);
+    public static final int StatusChannelNull = 1;
+    public static final int StatusChannelIsNotActivity = 2;
+    public static final int StatusChannelUnknown = 3;
+    public static final int StatusChannelIsActivity = 4;
+    public static final int StatusChannelConnecting = 5;
+    public static final int StatusChannelForceReconnecting = 6;
 
-        /**
-         * 连接失败
-         *
-         * @param future
-         * @param resistance
-         */
-        void onConnectFailed(ChannelFuture future, Object resistance);
-
-        /**
-         * 停止连接
-         *
-         * @param future
-         */
-        void onreConnectStop(ChannelFuture future);
-
-        /**
-         * 开始连接
-         * @param ip
-         * @param port
-         */
-        void onStartConnecting(String ip,int port );
-
-    }
 
     public void setChannelChangeListener(ChannelChangeListener channelChangeListener) {
-        mChannelChangeListener = channelChangeListener;
+        if (!channelChangeListener.equals(this.mChannelChangeListener)) {
+            mChannelChangeListener = channelChangeListener;
+            Log.d(TAG, "setChannelChangeListener: "+channelChangeListener.getClass().getSimpleName()+"注册监听");
+        }else {
+            Log.d(TAG, "setChannelChangeListener: "+channelChangeListener.getClass().getSimpleName()+"已经注册监听");
+        }
     }
 
-    public void sendData(String deviceValue) throws Exception {
+    public void sendData(final String deviceValue) throws Exception {
         if (channel != null && channel.isActive()) {
-            channel.writeAndFlush(deviceValue);
+            exec.execute(new Runnable() {
+                @Override
+                public void run() {
+                    channel.writeAndFlush(deviceValue);
+                }
+            });
             if (mChannelChangeListener != null) {
                 mChannelChangeListener.onChannelChangeListenerSend(deviceValue);
+            }
+        } else {
+            if (mChannelChangeListener != null) {
+                if (channel == null) {
+                    mChannelChangeListener.onNettyClientStatusListen(StatusChannelNull);
+                } else if (!channel.isActive()) {
+                    mChannelChangeListener.onNettyClientStatusListen(StatusChannelIsNotActivity);
+                } else {
+                    mChannelChangeListener.onNettyClientStatusListen(StatusChannelUnknown);
+                }
             }
         }
     }
 
-    public NettyTCPClient(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
+    private static NettyTCPClient mInstance;
+
+    public static void init() {
+        if (mInstance == null) {
+            synchronized (NettyTCPClient.class) {
+                if (mInstance == null) {
+                    mInstance = new NettyTCPClient();
+                }
+            }
+        }
+    }
+
+    public static NettyTCPClient getInstance() {
+        if (mInstance == null) {
+            synchronized (NettyTCPClient.class) {
+                if (mInstance == null) {
+                    mInstance = new NettyTCPClient();
+                }
+            }
+        }
+        return mInstance;
+    }
+
+
+    public NettyTCPClient() {
         bootstrap = new Bootstrap();
         bootstrap
                 .group(workGroup)
@@ -115,7 +122,7 @@ public class NettyTCPClient {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
                         NettyTCPClientHandler clientHandler = new NettyTCPClientHandler(NettyTCPClient.this);
-                        p.addLast(new IdleStateHandler(0, 0, 5));
+                        p.addLast(new IdleStateHandler(0, 0, 10));
                         p.addLast("decoder", new StringDecoder());
                         p.addLast("encoder", new StringEncoder());
                         p.addLast(clientHandler);
@@ -139,6 +146,9 @@ public class NettyTCPClient {
                                 if (mChannelChangeListener != null) {
                                     mChannelChangeListener.onConnectInactivity(ctx);
                                 }
+                                if (isAutoReconnect && !isConnecting) {//连接过程中造成的连接断开时主动行为，不必处理
+                                    doConnect(isForced);
+                                }
                             }
                         });
                     }
@@ -146,45 +156,100 @@ public class NettyTCPClient {
     }
 
     int connectTimes;
+    boolean isConnecting, isForced, isAutoReconnect;
 
-    public void doConnect() {
-        if (channel != null && channel.isActive()) {
+
+    public void connect(final String ip, final int port
+            , final boolean isAutoReconnect
+            , final int reConnectTimes
+            , final int reConnectDelay
+            , final boolean isForced) {
+        if (isConnecting) {
+            if (mChannelChangeListener != null) {
+                mChannelChangeListener.onNettyClientStatusListen(StatusChannelConnecting);
+            }
             return;
+        }
+        isConnecting = true;
+
+        this.reconnectTimes = reConnectTimes;
+        this.reconnectDelay = reConnectDelay;
+        this.ip = ip;
+        this.port = port;
+        this.isAutoReconnect = isAutoReconnect;
+        this.reconnectDelay = reConnectDelay;
+        this.isForced = isForced;
+        exec.execute(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (this) {
+                    doConnect(isForced);
+                }
+            }
+        });
+    }
+
+    private void doConnect(final boolean isForced) {
+        this.isForced = isForced;
+        if (channel == null) {
+            if (mChannelChangeListener != null) {
+                mChannelChangeListener.onNettyClientStatusListen(StatusChannelNull);
+            }
+        }
+        if (channel != null && channel.isActive()) {
+            if (mChannelChangeListener != null) {
+                mChannelChangeListener.onNettyClientStatusListen(StatusChannelIsActivity);
+            }
+            if (!isForced) {
+                return;
+            } else {
+                channel.close();
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mChannelChangeListener.onNettyClientStatusListen(StatusChannelForceReconnecting);
+            }
+        }
+        if (mChannelChangeListener != null) {
+            mChannelChangeListener.onStartConnecting(ip, port);
         }
         connectTimes++;
         final ChannelFuture future = bootstrap.connect(ip, port);
-        if (mChannelChangeListener != null) {
-            mChannelChangeListener.onStartConnecting(ip,port);
-        }
         Log.d(TAG, "doConnect: " + ip + ":" + port);
         future.addListener(new ChannelFutureListener() {
             public void operationComplete(ChannelFuture futureListener) throws Exception {
                 if (futureListener.isSuccess()) {
                     channel = futureListener.channel();
+                    connectTimes = 0;
+                    isConnecting = false;
                     Log.d(TAG, "operationComplete: Connect to server successfully!"
                             + channel.toString());
                 } else {
-                    int reTryTime = 5;
-                    Log.d(TAG, "operationComplete: Failed to connect to server, try connect after " + reTryTime + "s");
+                    Log.d(TAG, "operationComplete: Failed to connect to server, try connect after " + reconnectDelay + "s");
                     if (mChannelChangeListener != null) {
                         mChannelChangeListener.onConnectFailed(future, connectTimes);
                     }
-                    if (connectTimes < 3) {
+                    if (connectTimes < reconnectTimes + 1) {
                         futureListener.channel().eventLoop().schedule(new Runnable() {
                             @Override
                             public void run() {
-                                doConnect();
+                                doConnect(isForced);
                             }
-                        }, reTryTime, TimeUnit.SECONDS);
+                        }, reconnectDelay, TimeUnit.SECONDS);
                     } else {
                         connectTimes = 0;
                         if (mChannelChangeListener != null) {
                             mChannelChangeListener.onreConnectStop(future);
+                            isConnecting = false;
                         }
                     }
                 }
             }
         });
+
+
     }
 
     public void close() {

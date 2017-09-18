@@ -1,8 +1,10 @@
 package jason.tcpdemo.netty;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -18,11 +20,13 @@ import io.netty.channel.ChannelHandlerContext;
 import jason.tcpdemo.R;
 
 public class NettyClientActivity extends Activity
-        implements NettyTCPClient.ChannelChangeListener {
+        implements ChannelChangeListener {
     private static final String TAG = "NettyClientActivity";
 
     @BindView(R.id.received)
     TextView received;
+    @BindView(R.id.tv_jump)
+    TextView tvJump;
     @BindView(R.id.edit_tcpClientIp1)
     EditText editTcpClientIp1;
     @BindView(R.id.edit_tcpClientIp2)
@@ -44,6 +48,8 @@ public class NettyClientActivity extends Activity
     @BindView(R.id.tv_sent)
     TextView tvSent;
     private NettyTCPClient client;
+    private int portInt;
+    private String ip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,27 +61,32 @@ public class NettyClientActivity extends Activity
     long time;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy.mm.dd hh:MM:ss.SSS");
 
-    @OnClick(R.id.send)
-    public void send() {
-        if (client != null) {
-            try {
-                long t = System.currentTimeMillis();
-                sent.setText("" + t);
-                client.sendData("" + t);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    @OnClick({R.id.send, R.id.tv_jump})
+    public void onClickView(View v) {
+        switch (v.getId()) {
+            case R.id.send:
+                if (client != null) {
+                    try {
+                        long t = System.currentTimeMillis();
+                        sent.setText("" + t);
+                        client.sendData("" + t);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case R.id.tv_jump:
+                startActivity(new Intent(this, Main2Activity.class));
+                break;
         }
     }
 
     @OnClick(R.id.connect)
     public void onViewClicked() {
-
         String ipString1 = 0 + editTcpClientIp1.getText().toString().trim();
         String ipString2 = 0 + editTcpClientIp2.getText().toString().trim();
         String ipString3 = 0 + editTcpClientIp3.getText().toString().trim();
         String ipString4 = 0 + editTcpClientIp4.getText().toString().trim();
-
         int ip1Int1 = Integer.parseInt(ipString1);
         if (ip1Int1 <= 0) {
             editTcpClientIp1.setText("0");
@@ -100,28 +111,30 @@ public class NettyClientActivity extends Activity
         } else if (ip1Int4 > 255) {
             editTcpClientIp4.setText("255");
         }
-        final String ip = ip1Int1 + "." + ip1Int2 + "." + ip1Int3 + "." + ip1Int4;
+        ip = ip1Int1 + "." + ip1Int2 + "." + ip1Int3 + "." + ip1Int4;
 
         String portString = 0 + editTcpClientPort.getText().toString();
-        final int portInt = Integer.parseInt(portString);
+        portInt = Integer.parseInt(portString);
 
+        Log.d(TAG, "onViewClicked: " + "连接");
+//        connectServer(ip, portInt);
+        client = NettyTCPClient.getInstance();
+        client.setChannelChangeListener(NettyClientActivity.this);
+        client.connect(ip, portInt, true, 2, 5, true);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                client = new NettyTCPClient(ip, portInt);
-                client.setChannelChangeListener(NettyClientActivity.this);
-                client.doConnect();
-            }
-        }).start();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NettyTCPClient.getInstance().setChannelChangeListener(NettyClientActivity.this);
+    }
 
     @Override
     public void onChannelChangeListenerReceive(ChannelHandlerContext ctx, final Object msg) {
         Log.d(TAG, "$$$$$onChannelChangeListenerReceive接收数据: "
                 + msg.toString() + "  长度：" + msg.toString().length()
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
         synchronized (received.getClass()) {
             received.post(new Runnable() {
@@ -139,7 +152,7 @@ public class NettyClientActivity extends Activity
         Log.d(TAG, "$$$$$onChannelChangeListenerSend发送数据: "
                 + resistance.toString()
                 + "  长度：" + resistance.toString().length()
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
         synchronized (tvSent.getClass()) {
             tvSent.post(new Runnable() {
@@ -154,53 +167,68 @@ public class NettyClientActivity extends Activity
 
     /**
      * 连接成功
+     *
      * @param ch
      */
     @Override
-    public void onConnectActivity(ChannelHandlerContext ch) {
+    public void onConnectActivity(final ChannelHandlerContext ch) {
         Log.d(TAG, "$$$$$连接成功:"
-                + ch.name()+"  "
+                + ch.name() + "  "
                 + ch.channel().toString()
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
-
-        connect.setText("连接成功");
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connect.setText("连接成功" + ch.channel().toString());
+                connect.setClickable(true);
+            }
+        });
     }
 
     /**
      * 连接断开
+     *
      * @param ch
      */
     @Override
     public void onConnectInactivity(ChannelHandlerContext ch) {
-
         Log.d(TAG, "$$$$$连接断开:"
-                + ch.name()+"  "
+                + ch.name() + "  "
                 + ch.channel().toString()
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connect.setText("连接已断开，点击重连");
+                connect.setClickable(true);
+            }
+        });
 
-        connect.setText("连接已断开，点击重连");
-        connect.setClickable(true);
     }
 
     /**
      * 连接失败回调
+     *
      * @param future
      * @param times
      */
     @Override
-    public void onConnectFailed(ChannelFuture future,Object times) {
+    public void onConnectFailed(ChannelFuture future, final Object times) {
         Log.d(TAG, "$$$$$onConnectFailed: 连接失败："
-               + future.channel().toString()
+                + future.channel().toString()
                 + "  次数：" + times
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
-
-        connect.setText("连接失败"+times+",即将重连");
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connect.setText("连接失败" + times + ",即将重连");
+            }
+        });
     }
+
     /**
      * 停止连接重试
      *
@@ -211,20 +239,25 @@ public class NettyClientActivity extends Activity
 
         Log.d(TAG, "$$$$$onreConnectStop: 停止连接"
                 + "  " + future.channel().toString()
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
 
         );
 
-        connect.setText("失败次数过多，点击重试");
-        connect.setClickable(true);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connect.setText("失败次数过多，点击重试");
+                connect.setClickable(true);
+            }
+        });
     }
 
     @Override
     public void onStartConnecting(String ip, int port) {
 
         Log.d(TAG, "$$$$$onStartConnecting: 开始连接"
-                + "  ip:" + ip+"  port:"+port
-                +"  线程信息："+ getThreadInfo(Thread.currentThread())
+                + "  ip:" + ip + "  port:" + port
+                + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );
 
         runOnUiThread(new Runnable() {
@@ -234,6 +267,16 @@ public class NettyClientActivity extends Activity
                 connect.setClickable(false);
             }
         });
+    }
+
+    /**
+     * 其他状态状态监听
+     *
+     * @param flag
+     */
+    @Override
+    public void onNettyClientStatusListen(int flag) {
+        Log.d(TAG, "onNettyClientStatusListen: " + flag);
     }
 
 
