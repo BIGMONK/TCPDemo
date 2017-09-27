@@ -30,14 +30,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jason.tcpdemo.R;
+import jason.tcpdemo.Utils;
 import jason.tcpdemo.coms.TcpServerRunnable;
 
 import static android.R.attr.offset;
-
-/**
- * Created by Jason Zhu on 2017-04-24.
- * Email: cloud_happy@163.com
- */
 
 public class ActivityFuncTcpServer extends Activity {
     @BindView(R.id.txt_Server_Ip)
@@ -156,21 +152,17 @@ public class ActivityFuncTcpServer extends Activity {
             if (activity != null) {
                 switch (msg.what) {
                     case 1://接收区
-
                         if (txtRcv.getLineCount()>20){
                             txtRcv.setText("");
                             txtRcv.scrollTo(0,0);
                         }
-
                         txtRcv.append(msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
 //                            txtRcv.scrollTo(0, offset - txtRcv.getHeight());
                             txtRcv.scrollBy(0,txtRcv.getLineHeight());
-
                         }
-
                         break;
                     case 2:
 
@@ -233,43 +225,11 @@ public class ActivityFuncTcpServer extends Activity {
 
         btnCloseServer.setEnabled(false);
         btnServerSend.setEnabled(false);
-        txtServerIp.setText(getHostIP());
+        txtServerIp.setText(Utils.getHostIP());
     }
 
 
-    /**
-     * 获取ip地址
-     *
-     * @return
-     */
-    public String getHostIP() {
 
-        String hostIp = null;
-        try {
-            Enumeration nis = NetworkInterface.getNetworkInterfaces();
-            InetAddress ia = null;
-            while (nis.hasMoreElements()) {
-                NetworkInterface ni = (NetworkInterface) nis.nextElement();
-                Enumeration<InetAddress> ias = ni.getInetAddresses();
-                while (ias.hasMoreElements()) {
-                    ia = ias.nextElement();
-                    if (ia instanceof Inet6Address) {
-                        continue;// skip ipv6
-                    }
-                    String ip = ia.getHostAddress();
-                    if (!"127.0.0.1".equals(ip)) {
-                        hostIp = ia.getHostAddress();
-                        break;
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            Log.i("ActivityFuncTcpServer", "SocketException");
-            e.printStackTrace();
-        }
-        return hostIp;
-
-    }
 
     @Override
     protected void onDestroy() {

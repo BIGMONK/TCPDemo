@@ -3,12 +3,14 @@ package jason.tcpdemo.netty;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 
@@ -18,6 +20,7 @@ import butterknife.OnClick;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import jason.tcpdemo.R;
+import jason.tcpdemo.Utils;
 
 public class NettyClientActivity extends Activity
         implements ChannelChangeListener {
@@ -25,6 +28,8 @@ public class NettyClientActivity extends Activity
 
     @BindView(R.id.received)
     TextView received;
+    @BindView(R.id.tv_local_ip)
+    TextView tvLocalIP;
     @BindView(R.id.tv_jump)
     TextView tvJump;
     @BindView(R.id.edit_tcpClientIp1)
@@ -47,6 +52,16 @@ public class NettyClientActivity extends Activity
     TextView sent;
     @BindView(R.id.tv_sent)
     TextView tvSent;
+    @BindView(R.id.btn_wifi_set)
+    Button btnWifiSet;
+    @BindView(R.id.et_wifi_info)
+    EditText etWifiInfo;
+   @BindView(R.id.et_wifi_info_get)
+    EditText etWifiInfoGet;
+    @BindView(R.id.btn_wifi_get)
+    Button btnWifiGet;
+    @BindView(R.id.tv_wifi_info)
+    TextView tvWifiInfo;
     private NettyTCPClient client;
     private int portInt;
     private String ip;
@@ -56,30 +71,13 @@ public class NettyClientActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_netty_client);
         ButterKnife.bind(this);
+
+        tvLocalIP.setText(Utils.getHostIP());
     }
 
     long time;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy.mm.dd hh:MM:ss.SSS");
 
-    @OnClick({R.id.send, R.id.tv_jump})
-    public void onClickView(View v) {
-        switch (v.getId()) {
-            case R.id.send:
-                if (client != null) {
-                    try {
-                        long t = System.currentTimeMillis();
-                        sent.setText("" + t);
-                        client.sendData("" + t);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            case R.id.tv_jump:
-                startActivity(new Intent(this, Main2Activity.class));
-                break;
-        }
-    }
 
     @OnClick(R.id.connect)
     public void onViewClicked() {
@@ -115,9 +113,6 @@ public class NettyClientActivity extends Activity
 
         String portString = 0 + editTcpClientPort.getText().toString();
         portInt = Integer.parseInt(portString);
-
-        Log.d(TAG, "onViewClicked: " + "连接");
-//        connectServer(ip, portInt);
         client = NettyTCPClient.getInstance();
         client.setChannelChangeListener(NettyClientActivity.this);
         client.connect(ip, portInt, true, 2, 5, true);
@@ -142,6 +137,9 @@ public class NettyClientActivity extends Activity
                 public void run() {
                     time = System.currentTimeMillis();
                     received.setText("接收时间（" + sdf.format(time) + "):" + msg.toString());
+                    if (!msg.toString().equals("07070077")){
+                        tvWifiInfo.setText(msg.toString());
+                    }
                 }
             });
         }
@@ -184,6 +182,11 @@ public class NettyClientActivity extends Activity
                 connect.setClickable(true);
             }
         });
+//        try {
+//            sendData("{\"sub\":\"10\",\"cmd\":\"1000\",\"data\":{\"type\":0,\"code\":\"ac:83:f3:42:09:c0\"}}");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -290,5 +293,44 @@ public class NettyClientActivity extends Activity
         }
         return null;
     }
+
+    @OnClick({R.id.send, R.id.tv_jump, R.id.btn_wifi_set, R.id.btn_wifi_get})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_wifi_set:
+                String setInfo = etWifiInfo.getText().toString().trim();
+                if (TextUtils.isEmpty(setInfo)) {
+                    Toast.makeText(this, "设置内容不能为空", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendData(setInfo);
+                }
+                break;
+            case R.id.btn_wifi_get:
+                String getInfo = etWifiInfoGet.getText().toString().trim();
+                if (TextUtils.isEmpty(getInfo)) {
+                    Toast.makeText(this, "获取指令不能为空", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendData(getInfo);
+                }
+                break;
+            case R.id.send:
+                long t = System.currentTimeMillis();
+                sent.setText("" + t);
+                sendData("" + t);
+                break;
+            case R.id.tv_jump:
+                startActivity(new Intent(this, Main2Activity.class));
+                break;
+        }
+    }
+
+    private void sendData(String s) {
+        if (client != null) {
+            client.sendData(s);
+        } else {
+            Toast.makeText(this, "服务器未连接", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
 }

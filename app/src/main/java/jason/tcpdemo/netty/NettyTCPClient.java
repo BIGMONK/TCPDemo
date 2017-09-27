@@ -46,8 +46,6 @@ public class NettyTCPClient {
     private int reconnectDelay;
 
 
-
-
     public static final int StatusChannelNull = 1;
     public static final int StatusChannelIsNotActivity = 2;
     public static final int StatusChannelUnknown = 3;
@@ -59,13 +57,15 @@ public class NettyTCPClient {
     public void setChannelChangeListener(ChannelChangeListener channelChangeListener) {
         if (!channelChangeListener.equals(this.mChannelChangeListener)) {
             mChannelChangeListener = channelChangeListener;
-            Log.d(TAG, "setChannelChangeListener: "+channelChangeListener.getClass().getSimpleName()+"注册监听");
-        }else {
-            Log.d(TAG, "setChannelChangeListener: "+channelChangeListener.getClass().getSimpleName()+"已经注册监听");
+            Log.d(TAG, "setChannelChangeListener: " + channelChangeListener.getClass().getSimpleName() + "注册监听");
+        } else {
+            Log.d(TAG, "setChannelChangeListener: " + channelChangeListener.getClass().getSimpleName() + "已经注册监听");
         }
     }
 
-    public void sendData(final String deviceValue) throws Exception {
+
+    public void sendData(final String deviceValue) {
+
         if (channel != null && channel.isActive()) {
             exec.execute(new Runnable() {
                 @Override
@@ -122,7 +122,7 @@ public class NettyTCPClient {
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
                         ChannelPipeline p = socketChannel.pipeline();
                         NettyTCPClientHandler clientHandler = new NettyTCPClientHandler(NettyTCPClient.this);
-                        p.addLast(new IdleStateHandler(0, 0, 10));
+                        p.addLast(new IdleStateHandler(10, 0, 0));//十秒超时
                         p.addLast("decoder", new StringDecoder());
                         p.addLast("encoder", new StringEncoder());
                         p.addLast(clientHandler);
@@ -133,7 +133,6 @@ public class NettyTCPClient {
                                     mChannelChangeListener.onChannelChangeListenerReceive(ctx, msg);
                                 }
                             }
-
                             @Override
                             public void onChannelActive(ChannelHandlerContext ctx) {
                                 if (mChannelChangeListener != null) {
@@ -156,9 +155,18 @@ public class NettyTCPClient {
     }
 
     int connectTimes;
-    boolean isConnecting, isForced, isAutoReconnect;
+   private boolean isConnecting, isForced, isAutoReconnect;
 
 
+    /**
+     *
+     * @param ip
+     * @param port
+     * @param isAutoReconnect  是否自动重连
+     * @param reConnectTimes
+     * @param reConnectDelay
+     * @param isForced  是否断开原有的连接并重连
+     */
     public void connect(final String ip, final int port
             , final boolean isAutoReconnect
             , final int reConnectTimes

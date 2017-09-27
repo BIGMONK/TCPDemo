@@ -1,22 +1,19 @@
 package jason.tcpdemo.mina.handler;
-
-
-
 import android.util.Log;
+import android.widget.Toast;
 
+import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 
+import java.net.InetSocketAddress;
+
+import jason.tcpdemo.mina.KeepAliveMessageFactoryImpl;
 import jason.tcpdemo.mina.service.SocketService;
-
-/**
- * Created by best on 2016/7/20
- */
-
-
 public class TimeClientHander implements IoHandler {
-
+    public static String Request = "{\"sub\":\"101\",\"cmd\":\"2000\"}";
+    public static String Response = "{\"sub\":\"101\",\"data\":{\"code\":0},\"cmd\":\"2000\"}";
     private final String TAG = TimeClientHander.class.getSimpleName();
     private SocketService mSocketService = null;
 
@@ -67,13 +64,14 @@ public class TimeClientHander implements IoHandler {
         if (mSocketService != null) {
             mSocketService.processSessionClosed();
         }
+        Log.d("session","连接断开");
     }
 
     @Override
     public void sessionCreated(IoSession session)  {
         // TODO Auto-generated method stub
         if (session != null) {
-            Log.d(TAG, "client sessionCreated:" + session.toString() + "建立连接");
+            Log.d(TAG,"建立连接sessionCreated:" + session.toString() );
         }
         if (mSocketService != null) {
             mSocketService.processSessionCreated(session);
@@ -85,6 +83,7 @@ public class TimeClientHander implements IoHandler {
         // TODO Auto-generated method stub
         if (session != null) {
             Log.d(TAG, "session="+session.toString()+"   IDLE " + session.getIdleCount(status));
+//            session.write(Request);//空闲的时候发送心跳包
         }
 
     }

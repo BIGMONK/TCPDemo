@@ -24,11 +24,12 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-
     public interface ChannelValueChangeListener {
         void onChannelValueChangeListener(ChannelHandlerContext ctx, Object msg);
-        void  onChannelActive(ChannelHandlerContext ctx);
-        void  onChannelInactive(ChannelHandlerContext ctx);
+
+        void onChannelActive(ChannelHandlerContext ctx);
+
+        void onChannelInactive(ChannelHandlerContext ctx);
     }
 
     private ChannelValueChangeListener mChannelValueChangeListener;
@@ -41,7 +42,7 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
 //        Log.d(TAG, "channelInactive连接断开: " + ctx.channel().remoteAddress());
-        if (mChannelValueChangeListener!=null){
+        if (mChannelValueChangeListener != null) {
             mChannelValueChangeListener.onChannelInactive(ctx);
         }
     }
@@ -50,7 +51,7 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
 //        Log.d(TAG, "channelActive连接成功: " + ctx.channel().remoteAddress());
-        if (mChannelValueChangeListener!=null){
+        if (mChannelValueChangeListener != null) {
             mChannelValueChangeListener.onChannelActive(ctx);
         }
     }
@@ -66,15 +67,6 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);
 
-//        StringBuilder sb = new StringBuilder();
-//        byte[] bytes = msg.toString().getBytes();
-//        for (int i = 0; i < bytes.length; i++) {
-//            sb.append(bytes[i] + "  ");
-//        }
-//        Log.d(TAG, "channelRead: " + ctx.channel().remoteAddress()
-//                + " 接收到的内容：" + msg.toString()
-//                + " 内容字节码：" + sb.toString()
-//        );
         if (mChannelValueChangeListener != null) {
             mChannelValueChangeListener.onChannelValueChangeListener(ctx, msg);
         }
@@ -100,7 +92,7 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        Log.d(TAG, "exceptionCaught: " + ctx.channel().remoteAddress().toString()+"   cause:"+cause.getMessage());
+        Log.d(TAG, "exceptionCaught: " + ctx.channel().remoteAddress().toString() + "   cause:" + cause.getMessage());
     }
 
     @Override
@@ -126,6 +118,9 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
 
     protected void handleReaderIdle(ChannelHandlerContext ctx) {
         Log.d(TAG, "handleReaderIdle:READER_IDLE: " + ctx.channel().remoteAddress());
+        if (this.client != null) {
+            this.client.sendData("07070077");//超时心跳数据
+        }
     }
 
     protected void handleWriterIdle(ChannelHandlerContext ctx) {
@@ -134,12 +129,6 @@ public class NettyTCPClientHandler extends ChannelInboundHandlerAdapter {
 
     protected void handleAllIdle(ChannelHandlerContext ctx) {
         Log.d(TAG, "handleReaderIdle:ALL_IDLE: " + ctx.channel().remoteAddress());
-        try {
-            if (this.client != null) {
-                this.client.sendData(110 + "心跳");//超时心跳数据
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 }

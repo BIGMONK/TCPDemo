@@ -101,7 +101,9 @@ public class MinaClientActivity extends Activity
     public void send() {
         if (netSocket != null) {
             t = System.currentTimeMillis();
-            netSocket.sendMessageSocket(t + "");
+//            netSocket.sendMessageSocket(t + "");
+            netSocket.sendMessageSocket("{\"sub\":\"101\",\"cmd\":\"2000\"}");
+//            netSocket.sendMessageSocket("{\"sub\":\"10\",\"cmd\":\"1000\",\"data\":{\"type\":0,\"code\":\"ac:83:f3:42:09:c0\"}}");
         }
     }
 
@@ -150,7 +152,7 @@ public class MinaClientActivity extends Activity
                 netSocket = new NetSocket();
                 netSocket.setOnGetSessionListener(MinaClientActivity.this);
 
-//                netSocket.Connect("115.29.198.179", 9001);
+//                netSocket.Connect("47.92.101.44", 9001);
                 netSocket.Connect(ip, portInt);
                 netSocket.getSocketService().setMessageReceivedListener(MinaClientActivity.this);
 //

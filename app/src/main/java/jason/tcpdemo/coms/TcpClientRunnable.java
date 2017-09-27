@@ -18,11 +18,6 @@ import java.util.Date;
 
 import jason.tcpdemo.funcs.ActivityFuncTcpClient;
 
-/**
- * Created by Jason Zhu on 2017-04-25.
- * Email: cloud_happy@163.com
- */
-
 public class TcpClientRunnable implements Runnable {
     private String TAG = "TcpClientRunnable";
     private String serverIP = "192.168.88.141";

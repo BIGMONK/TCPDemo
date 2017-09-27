@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,13 +7,14 @@
         android:id="@+id/tv_sent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="sent"/>
+        android:text="sent" />
+
     <TextView
-        android:layout_below="@+id/tv_sent"
         android:id="@+id/received"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="receive"/>
+        android:layout_below="@+id/tv_sent"
+        android:text="receive" />
 
     <LinearLayout
         android:id="@+id/address"
@@ -27,7 +27,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ip:"/>
+            android:text="ip:" />
 
         <LinearLayout
             android:layout_width="0px"
@@ -40,13 +40,13 @@
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:text="192"/>
+                android:text="10" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:text="."/>
+                android:text="." />
 
             <EditText
                 android:id="@+id/edit_tcpClientIp2"
@@ -54,13 +54,13 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:inputType="number"
-                android:text="168"/>
+                android:text="10" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:text="."/>
+                android:text="." />
 
             <EditText
                 android:id="@+id/edit_tcpClientIp3"
@@ -68,13 +68,13 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:inputType="number"
-                android:text="0"/>
+                android:text="10" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
-                android:text="."/>
+                android:text="." />
 
             <EditText
                 android:id="@+id/edit_tcpClientIp4"
@@ -82,14 +82,14 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:inputType="number"
-                android:text="104" />
+                android:text="1" />
         </LinearLayout>
 
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="port"/>
+            android:text="port" />
 
         <EditText
             android:id="@+id/edit_tcpClientPort"
@@ -97,34 +97,94 @@
             android:layout_height="match_parent"
             android:layout_weight="0.6"
             android:inputType="number"
-            android:text="1112"/>
+            android:text="1213" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_local_ip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/address" />
 
     <Button
         android:id="@+id/connect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/address"
-        android:text="连接"/>
+        android:layout_below="@+id/tv_local_ip"
+        android:text="连接" />
 
     <Button
         android:id="@+id/send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/connect"
-        android:text="发送"/>
+        android:text="发送"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/sent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/send"
-        android:layout_toRightOf="@+id/send"/>
+        android:layout_toRightOf="@+id/send" />
 
     <TextView
         android:id="@+id/tv_jump"
-        android:text="跳转"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/send"
+        android:text="跳转"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/ll1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_jump"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_wifi_set"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/connect"
+            android:text="设置WIFI名称和密码" />
+
+        <EditText
+            android:id="@+id/et_wifi_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入wifi名称和密码" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btn_wifi_get"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/connect"
+            android:text="获取wifi板信息" />
+
+        <EditText
+            android:id="@+id/et_wifi_info_get"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入获取信息的指令" />
+
+        <TextView
+            android:id="@+id/tv_wifi_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="获取信息之后将在这里显示" />
+
+    </LinearLayout>
+
 
 </RelativeLayout>

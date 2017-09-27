@@ -130,6 +130,7 @@ public class ActivityFuncTcpClient extends Activity {
                     editClientPort.setText(portString);
                 }
 
+//                ip="47.92.101.44";portInt=9001;
                 tcpClient = new TcpClientRunnable(ip, portInt);
                 exec.execute(tcpClient);
                 break;
