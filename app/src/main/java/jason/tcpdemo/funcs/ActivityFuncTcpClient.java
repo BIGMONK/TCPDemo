@@ -12,7 +12,10 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,6 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jason.tcpdemo.R;
+import jason.tcpdemo.Utils;
 import jason.tcpdemo.coms.TcpClientRunnable;
 
 public class ActivityFuncTcpClient extends Activity {
@@ -64,6 +68,9 @@ public class ActivityFuncTcpClient extends Activity {
     Button btnScanDevices;
     @BindView(R.id.listview_Devices)
     ListView listviewDevices;
+    @BindView(R.id.atv_tcpClientSend)
+    AutoCompleteTextView acTextView;
+
     private String TAG = "ActivityFuncTcpClient";
     @SuppressLint("StaticFieldLeak")
     public static Context context;
@@ -72,6 +79,11 @@ public class ActivityFuncTcpClient extends Activity {
     private MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
     ExecutorService exec = Executors.newCachedThreadPool();//无界线程池，可以进行自动线程回收
     private String clientSendMsg;
+
+    private String[] res = {"Keepalive",
+            "Ayoutu-vip2", "Bkm19302017",
+            "AOffice-youtu", "Byoutukeji"
+    };
 
     @OnClick({R.id.edit_tcpClientIp1, R.id.edit_tcpClientPort, R.id.edit_tcpClientID,
             R.id.btn_tcpClientRandomID, R.id.btn_tcpClientConn, R.id.btn_tcpClientClose,
@@ -96,27 +108,27 @@ public class ActivityFuncTcpClient extends Activity {
                 String ipString4 = 0 + editClientIp4.getText().toString().trim();
 
                 int ip1Int1 = Integer.parseInt(ipString1);
-                if (ip1Int1<=0){
+                if (ip1Int1 <= 0) {
                     editClientIp1.setText("0");
-                }else if (ip1Int1>255){
+                } else if (ip1Int1 > 255) {
                     editClientIp1.setText("255");
                 }
                 int ip1Int2 = Integer.parseInt(ipString2);
-                if (ip1Int2<=0){
+                if (ip1Int2 <= 0) {
                     editClientIp2.setText("0");
-                }else if (ip1Int2>255){
+                } else if (ip1Int2 > 255) {
                     editClientIp2.setText("255");
                 }
                 int ip1Int3 = Integer.parseInt(ipString3);
-                if (ip1Int3<=0){
+                if (ip1Int3 <= 0) {
                     editClientIp3.setText("0");
-                }else if (ip1Int3>255){
+                } else if (ip1Int3 > 255) {
                     editClientIp3.setText("255");
                 }
                 int ip1Int4 = Integer.parseInt(ipString4);
-                if (ip1Int4<=0){
+                if (ip1Int4 <= 0) {
                     editClientIp4.setText("0");
-                }else if (ip1Int4>255){
+                } else if (ip1Int4 > 255) {
                     editClientIp4.setText("255");
                 }
                 String ip = ip1Int1 + "." + ip1Int2 + "." + ip1Int3 + "." + ip1Int4;
@@ -125,7 +137,7 @@ public class ActivityFuncTcpClient extends Activity {
                 int portInt = Integer.parseInt(portString);
 
 
-                if (TextUtils.isEmpty(portString)||portInt>65535||portInt<1024) {
+                if (TextUtils.isEmpty(portString) || portInt > 65535 || portInt < 1024) {
                     portString = "" + 1234;
                     editClientPort.setText(portString);
                 }
@@ -153,12 +165,12 @@ public class ActivityFuncTcpClient extends Activity {
             case R.id.btn_tcpClientSend:
                 Message tcpClientSendMessage = Message.obtain();
                 tcpClientSendMessage.what = 2;
-                clientSendMsg = editClientSend.getText().toString();
+//                clientSendMsg = editClientSend.getText().toString();
+                clientSendMsg = acTextView.getText().toString();
                 if (TextUtils.isEmpty(clientSendMsg)) {
                     clientSendMsg = new Date().toString() + "  " + System.currentTimeMillis();
-
                 }
-                clientSendMsg += "(From:" + tcpClient.getLocalSocketAdd() + ")";
+//                clientSendMsg += "(From:" + tcpClient.getLocalSocketAdd() + ")";
                 tcpClientSendMessage.obj = clientSendMsg;
                 myHandler.sendMessage(tcpClientSendMessage);
                 exec.execute(new Runnable() {
@@ -167,6 +179,7 @@ public class ActivityFuncTcpClient extends Activity {
                         tcpClient.send(clientSendMsg);
                     }
                 });
+                acTextView.setText("");
                 break;
         }
 
@@ -189,7 +202,7 @@ public class ActivityFuncTcpClient extends Activity {
                             txtRcv.setText("");
                             txtRcv.scrollTo(0, 0);
                         }
-                        txtRcv.append(msg.obj.toString() + "\r\n");
+                        txtRcv.append(Utils.simpleDateFormat.format(System.currentTimeMillis())+":"+msg.obj.toString() + "\r\n");
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
@@ -202,7 +215,7 @@ public class ActivityFuncTcpClient extends Activity {
                             txtSend.setText("");
                             txtSend.scrollTo(0, 0);
                         }
-                        txtSend.append(msg.obj.toString() + "\r\n");
+                        txtSend.append(Utils.simpleDateFormat.format(System.currentTimeMillis())+":"+msg.obj.toString() + "\r\n");
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
                         if (offset2 > txtSend.getHeight()) {
@@ -212,6 +225,10 @@ public class ActivityFuncTcpClient extends Activity {
                         Log.d(TAG, "handleMessage: 高度=txtSend.getHeight()=" + txtSend.getHeight()
                                 + "  offset2=" + offset2
                         );
+                        break;
+                    case 3:
+                        myHandler.sendEmptyMessageDelayed(3, 5000);
+                        if (tcpClient != null) tcpClient.send(res[0]);
                         break;
                 }
             }
@@ -230,6 +247,15 @@ public class ActivityFuncTcpClient extends Activity {
                     tcpClientReceiverMessage.what = 1;
                     tcpClientReceiverMessage.obj = msg;
                     myHandler.sendMessage(tcpClientReceiverMessage);
+                    int flag=intent.getIntExtra("flag",0);
+                    switch (flag){
+                        case 1:
+                            myHandler.sendEmptyMessage(3);
+                            break;
+                        case 2:
+                            myHandler.removeMessages(3);
+                            break;
+                    }
                     break;
             }
         }
@@ -251,6 +277,10 @@ public class ActivityFuncTcpClient extends Activity {
         txtRcv.setMovementMethod(ScrollingMovementMethod.getInstance());
         btnCloseClient.setEnabled(false);
         btnClientSend.setEnabled(false);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_list_item_1, res);
+        acTextView.setAdapter(adapter);
 
         bindReceiver();
     }

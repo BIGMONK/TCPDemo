@@ -127,7 +127,7 @@ public class NettyClientActivity extends Activity
 
     @Override
     public void onChannelChangeListenerReceive(ChannelHandlerContext ctx, final Object msg) {
-        Log.d(TAG, "$$$$$onChannelChangeListenerReceive接收数据: "
+        Log.d(TAG, "$$$$$onChannelChangeListenerReceive接收数据:"
                 + msg.toString() + "  长度：" + msg.toString().length()
                 + "  线程信息：" + getThreadInfo(Thread.currentThread())
         );

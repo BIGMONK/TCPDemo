@@ -78,8 +78,7 @@ public class TcpServerRunnable implements Runnable {
             serverSocket.setSoTimeout(5000);
             while (isListen) {
                 Log.i(TAG, "run: 开始监听..." + this.toString()
-                        + "  serverSocket=" + serverSocket.toString()
-                );
+                        + "  serverSocket=" + serverSocket.toString()         );
                 Socket socket = getSocket(serverSocket);
                 if (socket != null) {
                     new ServerSocketThread(socket);
@@ -153,7 +152,7 @@ public class TcpServerRunnable implements Runnable {
 
         @Override
         public void run() {
-            byte buff[] = new byte[4096];
+            byte buff[] = new byte[1024];
             String rcvMsg;
             int rcvLen;
             SST.add(this);

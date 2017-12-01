@@ -113,6 +113,7 @@ public class NettyTCPClient {
     }
 
 
+
     public NettyTCPClient() {
         bootstrap = new Bootstrap();
         bootstrap
