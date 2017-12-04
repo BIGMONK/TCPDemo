@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -80,9 +81,10 @@ public class ActivityFuncTcpClient extends Activity {
     ExecutorService exec = Executors.newCachedThreadPool();//无界线程池，可以进行自动线程回收
     private String clientSendMsg;
 
-    private String[] res = {"Keepalive",
-            "Ayoutu-vip2", "Bkm19302017",
-            "AOffice-youtu", "Byoutukeji"
+    private String[] res = {"Keepalive"
+            , "Ayoutuvip2", "Bkm19302017"
+            , "AOffice-youtu", "Byoutukeji"
+            , "Ared", "B488698112"
     };
 
     @OnClick({R.id.edit_tcpClientIp1, R.id.edit_tcpClientPort, R.id.edit_tcpClientID,
@@ -202,7 +204,13 @@ public class ActivityFuncTcpClient extends Activity {
                             txtRcv.setText("");
                             txtRcv.scrollTo(0, 0);
                         }
-                        txtRcv.append(Utils.simpleDateFormat.format(System.currentTimeMillis())+":"+msg.obj.toString() + "\r\n");
+//                        txtRcv.append(Utils.simpleDateFormat.format(System.currentTimeMillis())
+// +":"+msg.obj.toString() + "\r\n");
+                        txtRcv.append(Html.fromHtml("<font color='yellow' size='20'>" + Utils
+                                .simpleDateFormat.format(System.currentTimeMillis()) + ":" +
+                                "</font>" +
+                                "<font color='blue' size='30'>" + msg.obj.toString() + "</font>"
+                                + "<br />"));
                         int lines = txtRcv.getLineCount();
                         int offset = lines * txtRcv.getLineHeight();
                         if (offset > txtRcv.getHeight()) {
@@ -215,20 +223,38 @@ public class ActivityFuncTcpClient extends Activity {
                             txtSend.setText("");
                             txtSend.scrollTo(0, 0);
                         }
-                        txtSend.append(Utils.simpleDateFormat.format(System.currentTimeMillis())+":"+msg.obj.toString() + "\r\n");
+                        txtSend.append(Html.fromHtml("<font color='red' size='20'>" + Utils
+                                .simpleDateFormat.format(System.currentTimeMillis()) + ":" +
+                                "</font>" +
+                                "<font color='blue' size='30'>" + msg.obj.toString() + "</font>"
+                                + "<br />"));
+//                        txtSend.append(Utils.simpleDateFormat.format(System.currentTimeMillis()
+// )+":"+msg.obj.toString() + "\r\n");
+
                         int lines2 = txtSend.getLineCount();
                         int offset2 = lines2 * txtSend.getLineHeight();
                         if (offset2 > txtSend.getHeight()) {
 //                            txtSend.scrollTo(0, offset2 - txtSend.getHeight());
                             txtSend.scrollBy(0, txtSend.getLineHeight());
                         }
-                        Log.d(TAG, "handleMessage: 高度=txtSend.getHeight()=" + txtSend.getHeight()
-                                + "  offset2=" + offset2
-                        );
                         break;
-                    case 3:
+                    case 3://心跳包
                         myHandler.sendEmptyMessageDelayed(3, 5000);
                         if (tcpClient != null) tcpClient.send(res[0]);
+
+                        if (txtSend.getLineCount() > 20) {
+                            txtSend.setText("");
+                            txtSend.scrollTo(0, 0);
+                        }
+                        txtSend.append(Html.fromHtml("<font color='red' size='20'>" + Utils
+                                .simpleDateFormat.format(System.currentTimeMillis()) + ":" +
+                                "</font>" +
+                                "<font color='green' size='30'>" + res[0] + "</font>" + "<br />"));
+                        int lines3 = txtSend.getLineCount();
+                        int offset3 = lines3 * txtSend.getLineHeight();
+                        if (offset3 > txtSend.getHeight()) {
+                            txtSend.scrollBy(0, txtSend.getLineHeight());
+                        }
                         break;
                 }
             }
@@ -247,13 +273,13 @@ public class ActivityFuncTcpClient extends Activity {
                     tcpClientReceiverMessage.what = 1;
                     tcpClientReceiverMessage.obj = msg;
                     myHandler.sendMessage(tcpClientReceiverMessage);
-                    int flag=intent.getIntExtra("flag",0);
-                    switch (flag){
+                    int flag = intent.getIntExtra("flag", 0);
+                    switch (flag) {
                         case 1:
                             myHandler.sendEmptyMessage(3);
                             break;
                         case 2:
-                            myHandler.removeMessages(3);
+                            myHandler.removeCallbacksAndMessages(null);
                             break;
                     }
                     break;
