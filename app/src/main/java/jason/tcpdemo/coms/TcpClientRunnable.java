@@ -67,7 +67,7 @@ public class TcpClientRunnable implements Runnable {
 
     public void send(String msg) {
         if (socket != null && pw != null) {
-            pw.println(msg);
+            pw.print(msg);
             pw.flush();
             Log.d(TAG, "已发送数据send: " + msg);
         } else {

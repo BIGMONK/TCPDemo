@@ -59,6 +59,8 @@ public class ActivityFuncTcpClient extends Activity {
     Button btnCleanClientSend;
     @BindView(R.id.txt_ClientRcv)
     TextView txtRcv;
+    @BindView(R.id.tv_local_ip)
+    TextView txtLocalIP;
     @BindView(R.id.txt_ClientSend)
     TextView txtSend;
     @BindView(R.id.edit_tcpClientSend)
@@ -85,6 +87,7 @@ public class ActivityFuncTcpClient extends Activity {
             , "Ayoutuvip2", "Bkm19302017"
             , "AOffice-youtu", "Byoutukeji"
             , "Ared", "B488698112"
+            , "ATPlink", "B12345678"
     };
 
     @OnClick({R.id.edit_tcpClientIp1, R.id.edit_tcpClientPort, R.id.edit_tcpClientID,
@@ -239,7 +242,7 @@ public class ActivityFuncTcpClient extends Activity {
                         }
                         break;
                     case 3://心跳包
-                        myHandler.sendEmptyMessageDelayed(3, 5000);
+                        myHandler.sendEmptyMessageDelayed(3, 4000);
                         if (tcpClient != null) tcpClient.send(res[0]);
 
                         if (txtSend.getLineCount() > 20) {
@@ -307,7 +310,7 @@ public class ActivityFuncTcpClient extends Activity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this, android.R.layout.simple_list_item_1, res);
         acTextView.setAdapter(adapter);
-
+        txtLocalIP.setText("本地IP:"+Utils.getHostIP());
         bindReceiver();
     }
 
